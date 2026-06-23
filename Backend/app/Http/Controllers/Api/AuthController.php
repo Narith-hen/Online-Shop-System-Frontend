@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -34,22 +35,26 @@ class AuthController extends Controller
             ], 422);
         }
 
+        $customerRole = Role::where('name', 'customer')->first();
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => $customerRole?->id,
         ]);
 
+        $user->load('role');
         $token = $user->createToken('API Token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'message' => 'Register Successfully',
             'token' => $token,
+            'role' => $user->role?->name,
             'user' => $user,
         ], 201);
     }
-
     /** 
      * Login 
      */
@@ -68,7 +73,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::with('role')->where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
@@ -85,6 +90,7 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Login Successfully',
             'token' => $token,
+            'role' => $user->role?->name,
             'user' => $user,
         ]);
     }
