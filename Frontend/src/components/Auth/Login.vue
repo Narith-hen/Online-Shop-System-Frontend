@@ -50,7 +50,7 @@ const handleLogin = async () => {
 
       setTimeout(() => {
         if (data.role === 'admin') {
-          router.push('/dashboard')
+          window.location.href = apiUrl + '/admin'
         } else if (data.role === 'customer') {
           router.push('/home')
         } else {

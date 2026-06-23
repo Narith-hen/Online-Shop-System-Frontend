@@ -87,13 +87,24 @@ const router = createRouter({
 
 // 🔐 Route Guard
 router.beforeEach((to, from, next) => {
+  if (to.path === '/login' && to.query.logout) {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    next()
+    return
+  }
+
   const token = localStorage.getItem('token')
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const userRole = user.role
 
   // Redirect logged-in user away from login page
   if (to.path === '/login' && token) {
-    next(userRole === 'admin' ? '/dashboard' : '/customer/home')
+    if (userRole === 'admin') {
+      window.location.href = import.meta.env.VITE_API_BASE_URL + '/admin'
+    } else {
+      next('/home')
+    }
     return
   }
 
@@ -104,10 +115,19 @@ router.beforeEach((to, from, next) => {
       return
     }
 
+    if (to.meta.role === 'admin') {
+      window.location.href = import.meta.env.VITE_API_BASE_URL + '/admin'
+      return
+    }
+
     // Role check
     if (to.meta.role && userRole !== to.meta.role) {
       // Redirect to correct dashboard based on role
-      next(userRole === 'admin' ? '/dashboard' : '/customer/home')
+      if (userRole === 'admin') {
+        window.location.href = import.meta.env.VITE_API_BASE_URL + '/admin'
+      } else {
+        next('/home')
+      }
       return
     }
   }
