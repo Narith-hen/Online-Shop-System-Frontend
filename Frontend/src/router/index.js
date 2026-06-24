@@ -15,6 +15,9 @@ import CustomerOrderCard from '@/views/customer/OrderCard.vue'
 // Welcome
 import WelcomePage from '@/views/WelcomePage.vue'
 
+// Auth Callback
+import AuthCallback from '@/components/Auth/AuthCallback.vue'
+
 const routes = [
   {
     path: '/',
@@ -27,6 +30,13 @@ const routes = [
     name: 'Login',
     component: Login,
     meta: { guest: true }           // Only for non-logged in users
+  },
+
+  {
+    path: '/auth/callback',
+    name: 'AuthCallback',
+    component: AuthCallback,
+    meta: { guest: true }           // No auth required - this is where users land after OAuth
   },
 
   // ==================== ADMIN ROUTES ====================
@@ -98,10 +108,10 @@ router.beforeEach((to, from, next) => {
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const userRole = user.role
 
-  // Redirect logged-in user away from login page
-  if (to.path === '/login' && token) {
+  // Redirect logged-in users away from guest-only pages (e.g. /login)
+  if (to.meta.guest && token) {
     if (userRole === 'admin') {
-      window.location.href = import.meta.env.VITE_API_BASE_URL + '/admin'
+      next('/dashboard')
     } else {
       next('/home')
     }
@@ -115,16 +125,10 @@ router.beforeEach((to, from, next) => {
       return
     }
 
-    if (to.meta.role === 'admin') {
-      window.location.href = import.meta.env.VITE_API_BASE_URL + '/admin'
-      return
-    }
-
-    // Role check
+    // Role check — redirect to correct dashboard if role doesn't match
     if (to.meta.role && userRole !== to.meta.role) {
-      // Redirect to correct dashboard based on role
       if (userRole === 'admin') {
-        window.location.href = import.meta.env.VITE_API_BASE_URL + '/admin'
+        next('/dashboard')
       } else {
         next('/home')
       }

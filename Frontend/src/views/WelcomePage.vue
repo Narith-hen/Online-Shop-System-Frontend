@@ -1,49 +1,6 @@
 <template>
   <div class="min-h-screen bg-white">
-    <!-- Navigation Bar -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <!-- Logo -->
-          <div class="flex items-center gap-3">
-            <img src="/images/logo.png" alt="Online Shop" class="h-10 w-auto" />
-            <span class="text-2xl font-bold text-gray-900">Online Shop</span>
-          </div>
-
-          <!-- Navigation Links -->
-          <div class="hidden md:flex gap-8">
-            <a href="#features" class="text-gray-700 hover:text-blue-600 font-medium transition"
-              >Features</a
-            >
-            <a href="#testimonials" class="text-gray-700 hover:text-blue-600 font-medium transition"
-              >Testimonials</a
-            >
-            <a href="#pricing" class="text-gray-700 hover:text-blue-600 font-medium transition"
-              >Pricing</a
-            >
-            <a href="#contact" class="text-gray-700 hover:text-blue-600 font-medium transition"
-              >Contact</a
-            >
-          </div>
-
-          <!-- Login/Signup Buttons -->
-          <div class="flex items-center gap-4">
-            <router-link
-              to="/login"
-              class="text-gray-700 hover:text-blue-600 font-medium transition"
-            >
-              Login
-            </router-link>
-            <!-- <router-link 
-              to="/home"
-              class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition"
-            >
-              Enter Shop
-            </router-link> -->
-          </div>
-        </div>
-      </div>
-    </nav>
+    <Navbar />
 
     <!-- Hero Section -->
     <section
@@ -435,9 +392,11 @@
 
 <script>
 import welcomeImg from '@/assets/images/welcome.png'
+import Navbar from '@/components/Navbar.vue'
 
 export default {
   name: 'WelcomePage',
+  components: { Navbar },
   data() {
     return {
       welcomeImg,
