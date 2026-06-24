@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -20,7 +21,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role_id',           // ← Added
+        'role_id',
+        'avatar',
+        'provider',
+        'provider_id',
+        'provider_avatar',
     ];
 
     /**
@@ -86,5 +91,13 @@ class User extends Authenticatable
     public function isCustomer(): bool
     {
         return $this->hasRole('customer');
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!$this->avatar) {
+            return null;
+        }
+        return url(Storage::url($this->avatar));
     }
 }

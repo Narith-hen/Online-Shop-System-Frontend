@@ -16,6 +16,8 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"> --}}
+
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -86,7 +88,8 @@
             <div class="p-6 border-b border-gray-700">
                 <div class="flex items-center gap-3">
                     <!-- Logo Image -->
-                    <img src="{{ asset('images/logo.png') }}" alt="Online Shop Logo" class="w-10 h-10 object-contain rounded-3xl">
+                    <img src="{{ asset('images/logo.png') }}" alt="Online Shop Logo"
+                        class="w-10 h-10 object-contain rounded-3xl">
                     <div>
                         <h1 class="text-xl font-bold text-white">Online Shop</h1>
                         <p class="text-xs text-gray-400">Admin Panel</p>
@@ -127,7 +130,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <!-- Products Section -->
                 <div>
                     <button onclick="toggleDropdown('products')"
@@ -165,7 +168,7 @@
                 <div class="border-t border-gray-700 my-4"></div>
 
                 <!-- Settings -->
-                <a href="{{ route('admin.settings') }}"
+                <a href="{{ route('admin.settings.index') }}"
                     class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white @if (request()->routeIs('admin.settings')) active @endif">
                     <i class="fas fa-cog w-5"></i>
                     <span>Settings</span>
@@ -201,8 +204,14 @@
                         <!-- User Dropdown -->
                         <div class="relative group">
                             <button class="flex items-center gap-2 text-gray-700 hover:text-gray-900">
-                                <img src="https://via.placeholder.com/40x40?text=Admin" alt="User"
-                                    class="w-10 h-10 rounded-full">
+                                @if(optional(Auth::user())->avatar)
+                                    <img src="{{ Auth::user()->avatar_url }}" alt="User"
+                                        class="w-10 h-10 rounded-full object-cover">
+                                @else
+                                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                                        <span class="text-white font-bold text-sm">{{ substr(optional(Auth::user())->name ?? 'A', 0, 1) }}</span>
+                                    </div>
+                                @endif
                                 <span class="text-sm font-medium">{{ optional(Auth::user())->name ?? 'Admin' }}</span>
                                 <i class="fas fa-chevron-down text-xs"></i>
                             </button>
@@ -217,10 +226,13 @@
                                     <i class="fas fa-cog mr-2"></i> Settings
                                 </a>
                                 <hr class="my-2">
-                                <button onclick="logout()"
-                                    class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-b-lg">
-                                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                                </button>
+                                <form method="POST" action="{{ route('admin.logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-b-lg">
+                                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -230,18 +242,46 @@
             <!-- Page Content -->
             <main class="flex-1 overflow-auto">
                 <div class="p-6">
-                    <!-- Flash Messages -->
+
+                    <!-- Success Popup Banner -->
                     @if ($message = Session::get('success'))
-                        <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-                            <i class="fas fa-check-circle mr-2"></i>
-                            {{ $message }}
+                        <div id="success-banner"
+                            class="fixed top-4 right-4 max-w-md bg-white rounded-lg  p-4 shadow-2xl z-50 flex items-start gap-3">
+
+                            <div class="flex-shrink-0 mt-0.5">
+                                <div class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white"></i>
+                                </div>
+                            </div>
+
+                            <div class="flex-1">
+                                <p class="text-emerald-500 font-base">{{ $message }}</p>
+                                <button onclick="dismissBanner()"
+                                    class="mt-3 text-sm text-emerald-500 hover:text-white transition">
+                                    Dismiss
+                                </button>
+                            </div>
                         </div>
                     @endif
 
+                    <!-- Error Popup Banner -->
                     @if ($message = Session::get('error'))
-                        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                            <i class="fas fa-exclamation-circle mr-2"></i>
-                            {{ $message }}
+                        <div id="error-banner"
+                            class="fixed top-6 right-6 max-w-md bg-red-800 border border-red-600 rounded-2xl p-5 shadow-2xl z-50 flex items-start gap-3">
+
+                            <div class="flex-shrink-0 mt-0.5">
+                                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-exclamation-circle text-white"></i>
+                                </div>
+                            </div>
+
+                            <div class="flex-1">
+                                <p class="text-red-100 font-medium">{{ $message }}</p>
+                                <button onclick="dismissBanner()"
+                                    class="mt-3 text-sm text-red-300 hover:text-white transition">
+                                    Dismiss
+                                </button>
+                            </div>
                         </div>
                     @endif
 
@@ -290,9 +330,22 @@
         // Logout Function
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
-                window.location.href = '{{ route('admin.logout') }}';
+                document.querySelector('form[action="{{ route('admin.logout') }}"]').submit();
             }
         }
+
+        function dismissBanner() {
+            const success = document.getElementById('success-banner');
+            const error = document.getElementById('error-banner');
+
+            if (success) success.remove();
+            if (error) error.remove();
+        }
+
+        // Auto dismiss after 5 seconds
+        setTimeout(() => {
+            dismissBanner();
+        }, 1000000);
     </script>
 
     @stack('scripts')

@@ -123,4 +123,15 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Frontend URL
+    |--------------------------------------------------------------------------
+    |
+    | The URL of the frontend SPA. Used for OAuth callback redirects.
+    |
+    */
+
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
+
 ];
