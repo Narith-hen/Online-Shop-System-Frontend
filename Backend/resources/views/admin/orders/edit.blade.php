@@ -16,19 +16,10 @@
     <div class="bg-white rounded-lg shadow p-6 max-w-3xl">
         <h3 class="text-lg font-bold text-gray-800 mb-4">Update Order Status</h3>
 
-        <form action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="space-y-5">
+        <div id="edit-errors"></div>
+        <form id="edit-form" onsubmit="submitEditForm(event)" class="space-y-5">
             @csrf
             @method('PUT')
-
-            @if ($errors->any())
-                <div class="p-4 bg-red-100 text-red-700 border border-red-300 rounded-lg">
-                    <ul class="list-disc list-inside text-sm">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Order Info -->
@@ -54,7 +45,7 @@
                 <!-- Status Select -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Status <span class="text-red-500">*</span></label>
-                    <select name="status" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <select name="status" id="edit-status" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         <option value="pending" @selected(old('status', $order->status) === 'pending')>Pending</option>
                         <option value="processing" @selected(old('status', $order->status) === 'processing')>Processing</option>
                         <option value="shipped" @selected(old('status', $order->status) === 'shipped')>Shipped</option>
@@ -75,3 +66,57 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    function showToast(msg, type) {
+        const existing = document.getElementById('inline-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'inline-toast';
+    toast.className = 'fixed bottom-4 right-4 z-[9999] px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all '
+        + (type === 'success' ? 'bg-emerald-500' : 'bg-red-500');
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    }
+
+    function showErrors(containerId, errors) {
+        const container = document.getElementById(containerId);
+        let html = '<div class="p-4 bg-red-100 text-red-700 border border-red-300 rounded-lg mb-4"><ul class="list-disc list-inside text-sm">';
+        for (const key in errors) {
+            (Array.isArray(errors[key]) ? errors[key] : [errors[key]]).forEach(msg => { html += '<li>' + msg + '</li>'; });
+        }
+        html += '</ul></div>';
+        container.innerHTML = html;
+    }
+
+    async function submitEditForm(e) {
+        e.preventDefault();
+        document.getElementById('edit-errors').innerHTML = '';
+
+        const formData = new FormData(document.getElementById('edit-form'));
+        formData.append('_method', 'PUT');
+
+        try {
+            const res = await fetch('{{ route("admin.orders.update", $order->id) }}', {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                body: formData
+            });
+
+            if (res.ok) {
+                showToast('Order status updated successfully.', 'success');
+                setTimeout(() => { window.location.href = '{{ route("admin.orders.index") }}'; }, 1000);
+            } else {
+                const data = await res.json();
+                showErrors('edit-errors', data.errors || { general: [data.message || 'Something went wrong.'] });
+            }
+        } catch (err) {
+            showErrors('edit-errors', { general: ['Network error. Please try again.'] });
+        }
+    }
+</script>
+@endpush

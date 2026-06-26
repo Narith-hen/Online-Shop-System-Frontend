@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -18,6 +19,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'code',
         'name',
         'email',
         'password',
@@ -49,6 +51,17 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            if (empty($user->code)) {
+                $user->forceFill([
+                    'code' => 'SPU' . str_pad($user->id, 3, '0', STR_PAD_LEFT)
+                ])->saveQuietly();
+            }
+        });
     }
 
     // ====================== ROLE RELATIONSHIP ======================
@@ -91,6 +104,33 @@ class User extends Authenticatable
     public function isCustomer(): bool
     {
         return $this->hasRole('customer');
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function cartItems(): HasMany
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    public function wishlistItems(): HasMany
+    {
+        return $this->hasMany(WishlistItem::class);
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function notificationReads(): BelongsToMany
+    {
+        return $this->belongsToMany(Notification::class, 'notification_reads')
+            ->withPivot('read_at')
+            ->withTimestamps();
     }
 
     public function getAvatarUrlAttribute(): ?string

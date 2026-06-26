@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\SocketHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -37,10 +39,11 @@ class OrderController extends Controller
                 $query->where('status', $request->status);
             }
 
-            $totalOrders = Order::count();
-            $pendingOrders = Order::where('status', 'pending')->count();
-            $completedOrders = Order::where('status', 'completed')->count();
-            $totalRevenue = Order::sum('total') ?? 0;
+            $aggregates = Order::selectRaw('COUNT(*) as total_orders, SUM(CASE WHEN status = "pending" THEN 1 ELSE 0 END) as pending_orders, SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed_orders, SUM(total) as total_revenue')->first();
+            $totalOrders = $aggregates->total_orders;
+            $pendingOrders = $aggregates->pending_orders;
+            $completedOrders = $aggregates->completed_orders;
+            $totalRevenue = $aggregates->total_revenue ?? 0;
             $orders = $query->latest()->paginate(10)->withQueryString();
         }
 
@@ -73,7 +76,36 @@ class OrderController extends Controller
             'status' => 'required|string|in:pending,processing,shipped,completed,cancelled',
         ]);
 
+        $oldStatus = $order->status;
         $order->update($validated);
+
+        if ($oldStatus !== $order->status) {
+            try {
+                $notif = Notification::create([
+                    'title'   => 'Order #' . $order->id . ' ' . ucfirst($order->status),
+                    'message' => 'Your order status has been updated from "' . ucfirst($oldStatus) . '" to "' . ucfirst($order->status) . '".',
+                    'type'    => 'news',
+                    'link'    => '/orders/' . $order->id . '/receipt',
+                ]);
+                $notif->reads()->attach($order->user_id, ['read_at' => null]);
+
+                SocketHelper::notification([
+                    'id'         => $notif->id,
+                    'title'      => $notif->title,
+                    'message'    => $notif->message,
+                    'type'       => $notif->type,
+                    'link'       => $notif->link,
+                    'created_at' => $notif->created_at->toIso8601String(),
+                    'user_id'    => $order->user_id,
+                ]);
+            } catch (\Throwable $e) {
+                // Don't block the update if notification fails
+            }
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Order status updated successfully.']);
+        }
 
         return redirect()->route('admin.orders.index')->with('success', 'Order status updated successfully.');
     }
@@ -81,6 +113,10 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         $order->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Order deleted successfully.']);
+        }
 
         return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
     }

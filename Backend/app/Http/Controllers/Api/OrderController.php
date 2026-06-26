@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\SocketHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -50,6 +52,28 @@ class OrderController extends Controller
         }
 
         $order->update(['status' => 'cancelled']);
+
+        try {
+            $notif = Notification::create([
+                'title'   => 'Order #' . $order->id . ' Cancelled',
+                'message' => 'Your order of $' . number_format($order->total, 2) . ' has been cancelled.',
+                'type'    => 'news',
+                'link'    => '/orders/' . $order->id . '/receipt',
+            ]);
+            $notif->reads()->attach($request->user()->id, ['read_at' => null]);
+
+            SocketHelper::notification([
+                'id'         => $notif->id,
+                'title'      => $notif->title,
+                'message'    => $notif->message,
+                'type'       => $notif->type,
+                'link'       => $notif->link,
+                'created_at' => $notif->created_at->toIso8601String(),
+                'user_id'    => $request->user()->id,
+            ]);
+        } catch (\Throwable $e) {
+            // Don't block cancellation if notification fails
+        }
 
         return response()->json(['message' => 'Order cancelled successfully.', 'order' => $order->fresh(['user', 'items.product'])]);
     }

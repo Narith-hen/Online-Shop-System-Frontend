@@ -17,7 +17,7 @@ Route::post('admin/login', [SettingsController::class, 'login'])->name('admin.lo
 // Admin Panel (Auth required)
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('products', AdminProductController::class)->except(['show']);
+    Route::resource('products', AdminProductController::class);
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
 
     Route::get('orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
@@ -25,6 +25,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('orders/{order}/edit', [\App\Http\Controllers\Admin\OrderController::class, 'edit'])->name('orders.edit');
     Route::put('orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'update'])->name('orders.update');
     Route::delete('orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('orders.destroy');
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::post('settings/avatar', [SettingsController::class, 'updateAvatar'])->name('settings.avatar');

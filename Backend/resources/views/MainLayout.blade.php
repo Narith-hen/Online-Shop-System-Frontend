@@ -106,62 +106,32 @@
                     <span>Dashboard</span>
                 </a>
 
-                <!-- Categories Section -->
-                <div>
-                    <button onclick="toggleDropdown('categories')"
-                        class="w-full nav-link flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white @if (request()->routeIs('admin.categories*')) active @endif">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-tag w-5"></i>
-                            <span>Categories</span>
-                        </div>
-                        <i class="fas fa-chevron-down text-sm"></i>
-                    </button>
-                    <div id="categories"
-                        class="dropdown-menu @if (request()->routeIs('admin.categories*')) show @endif ml-4 mt-2 space-y-2">
-                        <a href="{{ route('admin.categories.index') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded text-gray-400 hover:text-white hover:bg-gray-800 @if (request()->routeIs('admin.categories.index')) bg-gray-800 text-white @endif">
-                            <i class="fas fa-list w-4"></i>
-                            <span>All Categories</span>
-                        </a>
-                        <a href="{{ route('admin.categories.create') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded text-gray-400 hover:text-white hover:bg-gray-800 @if (request()->routeIs('admin.categories.create')) bg-gray-800 text-white @endif">
-                            <i class="fas fa-plus w-4"></i>
-                            <span>Add Category</span>
-                        </a>
-                    </div>
-                </div>
+                <!-- Categories -->
+                <a href="{{ route('admin.categories.index') }}"
+                    class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white @if (request()->routeIs('admin.categories*')) active @endif">
+                    <i class="fas fa-tag w-5"></i>
+                    <span>Categories</span>
+                </a>
 
-                <!-- Products Section -->
-                <div>
-                    <button onclick="toggleDropdown('products')"
-                        class="w-full nav-link flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white @if (request()->routeIs('admin.products*')) active @endif">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-box w-5"></i>
-                            <span>Products</span>
-                        </div>
-                        <i class="fas fa-chevron-down text-sm"></i>
-                    </button>
-                    <div id="products"
-                        class="dropdown-menu @if (request()->routeIs('admin.products*')) show @endif ml-4 mt-2 space-y-2">
-                        <a href="{{ route('admin.products.index') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded text-gray-400 hover:text-white hover:bg-gray-800 @if (request()->routeIs('admin.products.index')) bg-gray-800 text-white @endif">
-                            <i class="fas fa-list w-4"></i>
-                            <span>All Products</span>
-                        </a>
-                        <a href="{{ route('admin.products.create') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded text-gray-400 hover:text-white hover:bg-gray-800 @if (request()->routeIs('admin.products.create')) bg-gray-800 text-white @endif">
-                            <i class="fas fa-plus w-4"></i>
-                            <span>Add Product</span>
-                        </a>
-                    </div>
-                </div>
-
+                <!-- Products -->
+                <a href="{{ route('admin.products.index') }}"
+                    class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white @if (request()->routeIs('admin.products*')) active @endif">
+                    <i class="fas fa-box w-5"></i>
+                    <span>Products</span>
+                </a>
 
                 <!-- Orders -->
                 <a href="{{ route('admin.orders.index') }}"
                     class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white @if (request()->routeIs('admin.orders*')) active @endif">
                     <i class="fas fa-shopping-cart w-5"></i>
                     <span>Orders</span>
+                </a>
+
+                <!-- Users -->
+                <a href="{{ route('admin.users.index') }}"
+                    class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:text-white @if (request()->routeIs('admin.users*')) active @endif">
+                    <i class="fas fa-users w-5"></i>
+                    <span>Users</span>
                 </a>
 
                 <!-- Divider -->
@@ -246,7 +216,7 @@
                     <!-- Success Popup Banner -->
                     @if ($message = Session::get('success'))
                         <div id="success-banner"
-                            class="fixed top-4 right-4 max-w-md bg-white rounded-lg  p-4 shadow-2xl z-50 flex items-start gap-3">
+        class="fixed bottom-4 right-4 max-w-md bg-white rounded-lg p-4 shadow-2xl z-50 flex items-start gap-3">
 
                             <div class="flex-shrink-0 mt-0.5">
                                 <div class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
@@ -267,7 +237,7 @@
                     <!-- Error Popup Banner -->
                     @if ($message = Session::get('error'))
                         <div id="error-banner"
-                            class="fixed top-6 right-6 max-w-md bg-red-800 border border-red-600 rounded-2xl p-5 shadow-2xl z-50 flex items-start gap-3">
+                            class="fixed bottom-6 right-6 max-w-md bg-red-800 border border-red-600 rounded-2xl p-5 shadow-2xl z-50 flex items-start gap-3">
 
                             <div class="flex-shrink-0 mt-0.5">
                                 <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
@@ -345,10 +315,49 @@
         // Auto dismiss after 5 seconds
         setTimeout(() => {
             dismissBanner();
-        }, 1000000);
+        }, 5000);
     </script>
 
     @stack('scripts')
+
+    {{-- Socket.IO — real-time admin alerts --}}
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script>
+        const adminSocket = io('http://127.0.0.1:3001', {
+            transports: ['websocket', 'polling']
+        });
+        adminSocket.on('connect', () => console.log('[Admin] Socket connected'));
+        adminSocket.on('connect_error', (err) => console.error('[Admin] Socket error:', err.message));
+        adminSocket.on('admin-notification', (data) => {
+            if (data && data.title) {
+                const toast = document.createElement('div');
+                toast.id = 'socket-toast-' + Date.now();
+                toast.className = 'fixed bottom-4 right-4 z-[9999] bg-white rounded-xl shadow-2xl border-l-4 border-l-blue-500 px-5 py-4 min-w-[320px] max-w-[420px] animate-slide-in';
+                toast.innerHTML =
+                    '<div class="flex items-start gap-3">' +
+                    '<div class="shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg">' +
+                    '<i class="fas fa-shopping-cart"></i></div>' +
+                    '<div class="flex-1 min-w-0">' +
+                    '<p class="text-sm font-semibold text-gray-900 truncate">' + data.title + '</p>' +
+                    '<p class="text-sm text-gray-500 leading-snug mt-0.5 line-clamp-2">' + data.message + '</p>' +
+                    '</div>' +
+                    '<button onclick="this.parentElement.parentElement.remove()" class="shrink-0 text-gray-400 hover:text-gray-600 ml-2">' +
+                    '<i class="fas fa-times text-sm"></i></button>' +
+                    '</div>';
+                document.body.appendChild(toast);
+                setTimeout(() => { const el = document.getElementById(toast.id); if (el) el.remove(); }, 8000);
+            }
+        });
+    </script>
+    <style>
+        .animate-slide-in {
+            animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(80px) scale(0.95); }
+            to   { opacity: 1; transform: translateX(0) scale(1); }
+        }
+    </style>
 </body>
 
 </html>

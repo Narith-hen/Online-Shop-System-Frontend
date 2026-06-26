@@ -27,7 +27,7 @@ class UserController extends Controller
             });
         }
 
-        $users = $query->latest()->paginate(10)->appends($request->query());
+        $users = $query->orderBy('code')->paginate(10)->appends($request->query());
         $roles = Role::all();
 
         return view('admin.users.index', compact('users', 'roles'));
@@ -37,7 +37,20 @@ class UserController extends Controller
     {
         $roles = Role::all();
 
+        if (request()->ajax() || request()->wantsJson()) {
+            return view('admin.users.partials.form', ['user' => null, 'roles' => $roles]);
+        }
+
         return view('admin.users.create', compact('roles'));
+    }
+
+    public function show(User $user)
+    {
+        $user->load(['role', 'orders' => function ($q) {
+            $q->latest()->limit(10);
+        }]);
+
+        return view('admin.users.show', compact('user'));
     }
 
     public function store(Request $request)
@@ -49,14 +62,30 @@ class UserController extends Controller
             'role_id'  => 'required|exists:roles,id',
         ]);
 
-        User::create($validated);
+        $user = User::create($validated);
 
-        return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'User created successfully.']);
+        }
+
+        return redirect()->route('admin.users.show', $user)->with('success', 'User created successfully.');
     }
 
     public function edit(User $user)
     {
         $roles = Role::all();
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'user' => [
+                    'id'      => $user->id,
+                    'name'    => $user->name,
+                    'email'   => $user->email,
+                    'role_id' => $user->role_id,
+                ],
+                'roles' => $roles,
+            ]);
+        }
 
         return view('admin.users.edit', compact('user', 'roles'));
     }
@@ -76,16 +105,27 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'User updated successfully.']);
+        }
+
+        return redirect()->route('admin.users.show', $user)->with('success', 'User updated successfully.');
     }
 
     public function destroy(User $user)
     {
         if ($user->isAdmin()) {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Cannot delete admin users.'], 403);
+            }
             return redirect()->route('admin.users.index')->with('error', 'Cannot delete admin users.');
         }
 
         $user->delete();
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
+        }
 
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
     }

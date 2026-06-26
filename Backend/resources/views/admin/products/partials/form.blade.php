@@ -79,6 +79,7 @@
 
 
 <label class="inline-flex items-center gap-2">
+    <input type="hidden" name="is_active" value="0">
     <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $product->is_active ?? true)) class="rounded border-gray-300 text-blue-600">
     <span class="text-sm font-medium text-gray-700">Active</span>
 </label>

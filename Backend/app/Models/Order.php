@@ -12,11 +12,24 @@ class Order extends Model
         'user_id',
         'total',
         'status',
+        'payment_method',
+        'payment_proof',
+        'payment_status',
     ];
 
     protected $casts = [
         'total' => 'float',
     ];
+
+    protected $appends = ['payment_proof_url'];
+
+    public function getPaymentProofUrlAttribute(): ?string
+    {
+        if (!$this->payment_proof) {
+            return null;
+        }
+        return url(\Illuminate\Support\Facades\Storage::url($this->payment_proof));
+    }
 
     public function user(): BelongsTo
     {

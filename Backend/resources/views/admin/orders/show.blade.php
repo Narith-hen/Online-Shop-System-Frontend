@@ -17,13 +17,9 @@
             <a href="{{ route('admin.orders.edit', $order->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
                 <i class="fas fa-edit mr-1"></i> Edit Status
             </a>
-            <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this order?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+            <button onclick="deleteOrder({{ $order->id }})" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
                     <i class="fas fa-trash mr-1"></i> Delete
                 </button>
-            </form>
         </div>
     </div>
 
@@ -176,4 +172,40 @@
     </div>
 </div>
 
+
 @endsection
+
+@push('scripts')
+<script>
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    function showToast(msg, type) {
+        const existing = document.getElementById('inline-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'inline-toast';
+    toast.className = 'fixed bottom-4 right-4 z-[9999] px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all '
+        + (type === 'success' ? 'bg-emerald-500' : 'bg-red-500');
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    }
+
+    async function deleteOrder(id) {
+        if (!confirm('Are you sure you want to delete this order?')) return;
+        try {
+            const res = await fetch(`/admin/orders/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken }
+            });
+            if (res.ok) {
+                showToast('Order deleted successfully.', 'success');
+                setTimeout(() => { window.location.href = '{{ route("admin.orders.index") }}'; }, 1000);
+            } else {
+                const d = await res.json();
+                showToast(d.message || 'Delete failed.', 'error');
+            }
+        } catch (e) { showToast('Network error.', 'error'); }
+    }
+</script>
+@endpush

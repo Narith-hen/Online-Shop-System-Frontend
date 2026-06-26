@@ -14,7 +14,7 @@
 
         <div class="flex items-center gap-3">
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg">Update</button>
-            <a href="{{ route('admin.categories.index') }}" class="text-gray-600 hover:text-gray-900">Cancel</a>
+            <a href="{{ route('admin.categories.show', $category) }}" class="text-gray-600 hover:text-gray-900">Cancel</a>
         </div>
     </form>
 </div>

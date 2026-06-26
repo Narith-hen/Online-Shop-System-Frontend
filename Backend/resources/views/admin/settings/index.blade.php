@@ -179,18 +179,19 @@
 <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    function showAlert(elementId, message, type) {
-        const el = document.getElementById(elementId);
-        el.classList.remove('hidden');
-        el.className = 'p-3 rounded-lg border-l-4 ' + (type === 'success'
-            ? 'bg-green-50 border-green-500 text-green-700'
-            : 'bg-red-50 border-red-500 text-red-700');
-        el.textContent = message;
-
-        setTimeout(() => { el.classList.add('hidden'); }, 5000);
+    function showToast(msg, type) {
+        const existing = document.getElementById('inline-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'inline-toast';
+    toast.className = 'fixed bottom-4 right-4 z-[9999] px-5 py-3 rounded-lg shadow-lg text-white font-medium transition-all '
+        + (type === 'success' ? 'bg-emerald-500' : 'bg-red-500');
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
 
-    function clearErrors() {
+    function clearFieldErrors() {
         document.querySelectorAll('[id$="-error"]').forEach(el => {
             el.classList.add('hidden');
             el.textContent = '';
@@ -208,7 +209,7 @@
     // =================== Avatar Upload ===================
     document.getElementById('avatarForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        clearErrors();
+        clearFieldErrors();
 
         const fileInput = document.getElementById('avatar');
         if (!fileInput.files.length) {
@@ -233,7 +234,7 @@
             const data = await response.json();
 
             if (data.success) {
-                showAlert('avatarAlert', data.message, 'success');
+                showToast(data.message, 'success');
                 // Update preview
                 const preview = document.getElementById('avatarPreview');
                 if (preview.tagName === 'IMG') {
@@ -249,7 +250,7 @@
                 // Also update sidebar avatar in the layout
                 fileInput.value = '';
             } else {
-                showAlert('avatarAlert', data.message || 'Upload failed.', 'error');
+                showToast(data.message || 'Upload failed.', 'error');
                 if (data.errors) {
                     for (const [field, msg] of Object.entries(data.errors)) {
                         showFieldError(field, msg);
@@ -257,7 +258,7 @@
                 }
             }
         } catch (err) {
-            showAlert('avatarAlert', 'An error occurred. Please try again.', 'error');
+            showToast('An error occurred. Please try again.', 'error');
         }
     });
 
@@ -280,7 +281,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showAlert('avatarAlert', data.message, 'success');
+                    showToast(data.message, 'success');
                     // Replace img with initial placeholder
                     const preview = document.getElementById('avatarPreview');
                     const div = document.createElement('div');
@@ -291,10 +292,10 @@
                     // Hide remove button
                     removeAvatarBtn.style.display = 'none';
                 } else {
-                    showAlert('avatarAlert', data.message || 'Failed to remove avatar.', 'error');
+                    showToast(data.message || 'Failed to remove avatar.', 'error');
                 }
             } catch (err) {
-                showAlert('avatarAlert', 'An error occurred. Please try again.', 'error');
+                showToast('An error occurred. Please try again.', 'error');
             }
         });
     }
@@ -302,7 +303,7 @@
     // =================== Settings Update ===================
     document.getElementById('settingsForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        clearErrors();
+        clearFieldErrors();
 
         const name = document.getElementById('name').value.trim();
         const email = document.getElementById('email').value.trim();
@@ -321,7 +322,7 @@
             const data = await response.json();
 
             if (data.success) {
-                showAlert('alertMessage', data.message, 'success');
+                showToast(data.message, 'success');
                 // Update the display info
                 document.getElementById('displayName').textContent = name;
                 document.getElementById('displayEmail').textContent = email;
@@ -331,7 +332,7 @@
                 user.email = email;
                 localStorage.setItem('user', JSON.stringify(user));
             } else {
-                showAlert('alertMessage', data.message || 'Update failed.', 'error');
+                showToast(data.message || 'Update failed.', 'error');
                 if (data.errors) {
                     for (const [field, msg] of Object.entries(data.errors)) {
                         showFieldError(field, msg);
@@ -339,14 +340,14 @@
                 }
             }
         } catch (err) {
-            showAlert('alertMessage', 'An error occurred. Please try again.', 'error');
+            showToast('An error occurred. Please try again.', 'error');
         }
     });
 
     // =================== Password Update ===================
     document.getElementById('passwordForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        clearErrors();
+        clearFieldErrors();
 
         const current_password = document.getElementById('current_password').value;
         const password = document.getElementById('password').value;
@@ -366,10 +367,10 @@
             const data = await response.json();
 
             if (data.success) {
-                showAlert('passwordAlertMessage', data.message, 'success');
+                showToast(data.message, 'success');
                 document.getElementById('passwordForm').reset();
             } else {
-                showAlert('passwordAlertMessage', data.message || 'Password update failed.', 'error');
+                showToast(data.message || 'Password update failed.', 'error');
                 if (data.errors) {
                     for (const [field, msg] of Object.entries(data.errors)) {
                         showFieldError(field, msg);
@@ -377,7 +378,7 @@
                 }
             }
         } catch (err) {
-            showAlert('passwordAlertMessage', 'An error occurred. Please try again.', 'error');
+            showToast('An error occurred. Please try again.', 'error');
         }
     });
 </script>

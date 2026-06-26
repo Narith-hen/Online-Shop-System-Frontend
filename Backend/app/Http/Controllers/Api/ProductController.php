@@ -13,13 +13,37 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // dd("mix del prolong msel minh");
-        $products = Product::with('category')->get();
+        $query = Product::with('category');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->boolean('in_stock')) {
+            $query->where('stock', '>', 0);
+        }
+
+        $perPage = min((int) $request->input('per_page', 20), 100);
+        $products = $query->latest()->paginate($perPage);
         return response()->json([
             'success' => true,
-            'data'    => $products
+            'data'    => $products->items(),
+            'meta'    => [
+                'current_page' => $products->currentPage(),
+                'last_page'    => $products->lastPage(),
+                'per_page'     => $products->perPage(),
+                'total'        => $products->total(),
+            ],
         ], 200);
     }
 
@@ -64,9 +88,9 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Product $product)
     {
-        $product = Product::with('category')->find($id);
+        $product->load('category');
         return response()->json([
             'success' => true,
             'data'    => $product
@@ -76,18 +100,22 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Product $product)
     {
-        // dd($request->all());
-        $product = Product::find($id);
-        $validator = Validator::make($request->all(), [
-            'name'        => 'required|string|max:255',
+        $rules = [
+            'name'        => 'sometimes|required|string|max:255',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'price'       => 'required|numeric|min:0',
-            'stock'       => 'required|integer|min:0',
+            'price'       => 'sometimes|required|numeric|min:0',
+            'stock'       => 'sometimes|required|integer|min:0',
             'is_active'   => 'boolean',
-            'category_id' => 'required|exists:categories,id',
-        ]);
+            'category_id' => 'sometimes|required|exists:categories,id',
+        ];
+
+        if (!$request->hasFile('image')) {
+            $rules['image'] = 'nullable';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -96,16 +124,19 @@ class ProductController extends Controller
             ], 422);
         }
         $validated = $validator->validated();
-        $validated['is_active'] = $request->boolean('is_active', $product->is_active);
-        // File Replacement Pipeline
+
+        if ($request->has('is_active')) {
+            $validated['is_active'] = $request->boolean('is_active');
+        }
+
         if ($request->hasFile('image')) {
-            // Delete old file asset from storage disk if a replacement exists
             if ($product->image && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
             $path = $request->file('image')->store('products', 'public');
             $validated['image'] = $path;
         }
+
         $product->update($validated);
         $product->load('category');
         return response()->json([
@@ -117,9 +148,8 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Product $product)
     {
-        $product = Product::find($id);
         if ($product->image && Storage::disk('public')->exists($product->image)) {
             Storage::disk('public')->delete($product->image);
         }

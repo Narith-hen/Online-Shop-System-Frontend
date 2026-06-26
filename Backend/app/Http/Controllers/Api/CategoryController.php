@@ -15,8 +15,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        // dd(1);
-        $categories = Category::all();
+        $categories = Category::withCount('products')->get();
         return response()->json([
             'success' => true,
             'data'    => $categories
@@ -56,9 +55,12 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        $category = Category::findOrFail($id);
+        $perPage = min((int) $request->input('per_page', 20), 100);
+        $category = Category::withCount('products')->findOrFail($id);
+        $products = $category->products()->latest()->paginate($perPage);
+        $category->setRelation('products', $products);
         return response()->json([
             'success' => true,
             'data'    => $category

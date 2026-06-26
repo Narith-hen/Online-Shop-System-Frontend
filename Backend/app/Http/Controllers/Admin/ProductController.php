@@ -10,18 +10,50 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->latest()->get();
+        $query = Product::with('category');
 
-        return view('admin.products.index', compact('products'));
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhereHas('category', function ($q2) use ($search) {
+                      $q2->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status === 'active');
+        }
+
+        $products = $query->latest()->paginate(15)->withQueryString();
+        $categories = Category::all();
+
+        return view('admin.products.index', compact('products', 'categories'));
     }
 
     public function create()
     {
         $categories = Category::all();
 
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(['categories' => $categories]);
+        }
+
         return view('admin.products.create', compact('categories'));
+    }
+
+    public function show(Product $product)
+    {
+        $product->load('category');
+
+        return view('admin.products.show', compact('product'));
     }
 
     public function store(Request $request)
@@ -41,14 +73,33 @@ class ProductController extends Controller
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
 
-        Product::create($validated);
+        $product = Product::create($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Product created successfully.']);
+        }
+
+        return redirect()->route('admin.products.show', $product)->with('success', 'Product created successfully.');
     }
 
     public function edit(Product $product)
     {
         $categories = Category::all();
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'product' => [
+                    'id'          => $product->id,
+                    'name'        => $product->name,
+                    'price'       => $product->price,
+                    'stock'       => $product->stock,
+                    'category_id' => $product->category_id,
+                    'is_active'   => $product->is_active,
+                    'image_url'   => $product->image_url,
+                ],
+                'categories' => $categories,
+            ]);
+        }
 
         return view('admin.products.edit', compact('product', 'categories'));
     }
@@ -70,13 +121,16 @@ class ProductController extends Controller
             if ($product->image && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
-
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
 
         $product->update($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Product updated successfully.']);
+        }
+
+        return redirect()->route('admin.products.show', $product)->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product)
@@ -86,6 +140,10 @@ class ProductController extends Controller
         }
 
         $product->delete();
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Product deleted successfully.']);
+        }
 
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
     }
