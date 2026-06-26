@@ -4,8 +4,25 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
+const email = ref('')
+const password = ref('')
+const loading = ref(false)
+const message = ref('')
+const showPassword = ref(false)
+const socialLoading = ref(null)
+
+// Clear any leftover / autofilled values whenever the login page is shown
+const resetForm = () => {
+  email.value = ''
+  password.value = ''
+  showPassword.value = false
+  message.value = ''
+  loading.value = false
+}
+
 // Guest guard: redirect logged-in users away from login page
 onMounted(() => {
+  resetForm()
   const token = localStorage.getItem('token')
   const user = JSON.parse(localStorage.getItem('user') || '{}')
 
@@ -17,12 +34,6 @@ onMounted(() => {
     }
   }
 })
-const email = ref('')
-const password = ref('')
-const loading = ref(false)
-const message = ref('')
-const showPassword = ref(false)
-const socialLoading = ref(null)
 
 const handleLogin = async () => {
   if (!email.value || !password.value) {
@@ -59,11 +70,14 @@ const handleLogin = async () => {
         }),
       )
 
+      // Clear all form state
       email.value = ''
       password.value = ''
+      showPassword.value = false
       message.value = 'Login successful!'
 
       setTimeout(() => {
+        message.value = ''
         if (data.role === 'admin') {
           router.push('/dashboard')
         } else if (data.role === 'customer') {
@@ -73,9 +87,14 @@ const handleLogin = async () => {
         }
       }, 1000)
     } else {
+      // Clear password on failed attempt (keep email for convenience)
+      password.value = ''
+      showPassword.value = false
       message.value = data.message || 'Login failed'
     }
   } catch (error) {
+    password.value = ''
+    showPassword.value = false
     message.value = 'Error: ' + error.message
   } finally {
     loading.value = false
@@ -134,6 +153,8 @@ const togglePasswordVisibility = () => {
             <input
               v-model="email"
               type="email"
+              name="email"
+              autocomplete="off"
               placeholder="narith@gmail.com"
               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
             />
@@ -156,6 +177,8 @@ const togglePasswordVisibility = () => {
             <input
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
+              name="password"
+              autocomplete="new-password"
               placeholder="Enter your password"
               class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
             />
@@ -286,9 +309,9 @@ const togglePasswordVisibility = () => {
         <!-- Sign Up Link -->
         <p class="text-center text-gray-600">
           Don't have an account?
-          <a href="/register" class="text-blue-600 hover:text-blue-700 font-semibold">
+          <router-link to="/register" class="text-blue-600 hover:text-blue-700 font-semibold">
             Sign up here
-          </a>
+          </router-link>
         </p>
       </div>
 

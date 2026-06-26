@@ -2,7 +2,7 @@
   <div>
     <!-- Header -->
     <section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12 px-4">
-      <div class="max-w-7xl mx-auto text-center">
+      <div class="max-w-7xl mx-auto text-center animate-fade-in-down">
         <h1 class="text-5xl font-bold mb-4">Contact Us</h1>
         <p class="text-xl">We'd love to hear from you. Get in touch with us today!</p>
       </div>
@@ -14,7 +14,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         
         <!-- Contact Information Cards -->
-        <div class="bg-white rounded-lg shadow-md p-8">
+        <div class="bg-white rounded-lg shadow-md p-8 animate-fade-in-up" style="animation-delay: 0ms">
           <div class="text-4xl mb-4">📧</div>
           <h3 class="text-xl font-bold mb-2">Email</h3>
           <p class="text-gray-600 mb-2">Get in touch via email</p>
@@ -24,7 +24,7 @@
           <p class="text-gray-500 text-sm mt-2">Response time: 24 hours</p>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md p-8">
+        <div class="bg-white rounded-lg shadow-md p-8 animate-fade-in-up" style="animation-delay: 120ms">
           <div class="text-4xl mb-4">📞</div>
           <h3 class="text-xl font-bold mb-2">Phone</h3>
           <p class="text-gray-600 mb-2">Call us during business hours</p>
@@ -34,7 +34,7 @@
           <p class="text-gray-500 text-sm mt-2">Mon-Fri: 9 AM - 6 PM EST</p>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md p-8">
+        <div class="bg-white rounded-lg shadow-md p-8 animate-fade-in-up" style="animation-delay: 240ms">
           <div class="text-4xl mb-4">📍</div>
           <h3 class="text-xl font-bold mb-2">Address</h3>
           <p class="text-gray-600 mb-2">Visit our office</p>
@@ -51,7 +51,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
         
         <!-- Form -->
-        <div>
+        <div class="animate-fade-in-left">
           <h2 class="text-3xl font-bold mb-8">Send us a Message</h2>
           <form @submit.prevent="submitForm" class="space-y-6">
             
@@ -144,7 +144,7 @@
         </div>
 
         <!-- Map or Additional Info -->
-        <div>
+        <div class="animate-fade-in-right">
           <h2 class="text-3xl font-bold mb-8">Office Location</h2>
           <img 
             src="https://via.placeholder.com/400x500?text=Map" 

@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import Login from '@/components/Auth/Login.vue'
+import Register from '@/components/Auth/Register.vue'
 import dashboard from '@/views/admin/dashboard.vue'
 import NotFound from '@/views/NotFound.vue'
+import AdminLayout from '@/components/layouts/AdminLayout.vue'
 import MainLayout from '@/components/layouts/MainLayout.vue'
 
 // Customer Views
@@ -11,6 +13,12 @@ import CustomerProduct from '@/views/customer/ProductPage.vue'
 import CustomerAbout from '@/views/customer/AboutPage.vue'
 import CustomerContact from '@/views/customer/ContactPage.vue'
 import CustomerOrderCard from '@/views/customer/OrderCard.vue'
+import ProductDetail from '@/views/customer/ProductDetail.vue'
+import CategoryPage from '@/views/customer/CategoryPage.vue'
+import UserProfile from '@/views/customer/UserProfile.vue'
+import CartPage from '@/views/customer/CartPage.vue'
+import CheckoutPage from '@/views/customer/CheckoutPage.vue'
+import ReceiptPage from '@/views/customer/ReceiptPage.vue'
 
 // Welcome
 import WelcomePage from '@/views/WelcomePage.vue'
@@ -33,6 +41,13 @@ const routes = [
   },
 
   {
+    path: '/register',
+    name: 'Register',
+    component: Register,
+    meta: { guest: true }           // Only for non-logged in users
+  },
+
+  {
     path: '/auth/callback',
     name: 'AuthCallback',
     component: AuthCallback,
@@ -41,10 +56,21 @@ const routes = [
 
   // ==================== ADMIN ROUTES ====================
   {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: dashboard,
-    meta: { requiresAuth: true, role: 'admin' }
+    path: '/admin',
+    component: AdminLayout,
+    meta: { requiresAuth: true, role: 'admin' },
+    children: [
+      {
+        path: '',
+        redirect: { name: 'AdminDashboard' }
+      },
+      {
+        path: 'dashboard',
+        name: 'AdminDashboard',
+        component: dashboard,
+        meta: { title: 'Dashboard' }
+      },
+    ]
   },
 
   // ==================== CUSTOMER ROUTES ====================
@@ -65,6 +91,21 @@ const routes = [
         component: CustomerProduct
       },
       {
+        path: 'products/:id',
+        name: 'ProductDetail',
+        component: ProductDetail
+      },
+      {
+        path: 'categories',
+        name: 'Categories',
+        component: CategoryPage
+      },
+      {
+        path: 'categories/:id',
+        name: 'CategoryDetail',
+        component: CategoryPage
+      },
+      {
         path: 'about',
         name: 'About',
         component: CustomerAbout
@@ -78,6 +119,26 @@ const routes = [
         path: 'orders',
         name: 'Orders',
         component: CustomerOrderCard
+      },
+      {
+        path: 'orders/:id/receipt',
+        name: 'Receipt',
+        component: ReceiptPage
+      },
+      {
+        path: 'cart',
+        name: 'Cart',
+        component: CartPage
+      },
+      {
+        path: 'checkout',
+        name: 'Checkout',
+        component: CheckoutPage
+      },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: UserProfile
       }
     ]
   },
@@ -111,7 +172,7 @@ router.beforeEach((to, from, next) => {
   // Redirect logged-in users away from guest-only pages (e.g. /login)
   if (to.meta.guest && token) {
     if (userRole === 'admin') {
-      next('/dashboard')
+      next('/admin/dashboard')
     } else {
       next('/home')
     }
@@ -128,7 +189,7 @@ router.beforeEach((to, from, next) => {
     // Role check — redirect to correct dashboard if role doesn't match
     if (to.meta.role && userRole !== to.meta.role) {
       if (userRole === 'admin') {
-        next('/dashboard')
+        next('/admin/dashboard')
       } else {
         next('/home')
       }

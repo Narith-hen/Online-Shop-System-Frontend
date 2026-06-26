@@ -1,78 +1,136 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col">
+  <div class="min-h-screen flex flex-col bg-gray-50">
     <Navbar />
 
     <!-- Page Content -->
     <main class="flex-1">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition name="route" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white mt-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          <!-- Company Info -->
-          <div>
-            <h3 class="text-xl font-bold mb-4">Online Shop</h3>
-            <p class="text-gray-400">
-              Your trusted online shopping destination for quality products.
+    <footer class="bg-white border-t border-gray-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Top: brand + columns -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-10 py-12">
+          <!-- Brand -->
+          <div class="md:col-span-4">
+            <div class="flex items-center gap-2.5 mb-4">
+              <img src="/images/logo.png" alt="Online Shop" class="h-8 w-auto" />
+              <span class="text-xl font-semibold tracking-tight text-gray-900">Online Shop</span>
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed max-w-xs">
+              Your trusted online shopping destination for quality products, delivered to your door.
             </p>
+            <div class="flex gap-2 mt-5">
+              <a href="#" aria-label="Facebook" class="footer-social">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a href="#" aria-label="Twitter" class="footer-social">
+                <i class="fab fa-x-twitter"></i>
+              </a>
+              <a href="#" aria-label="Instagram" class="footer-social">
+                <i class="fab fa-instagram"></i>
+              </a>
+              <a href="#" aria-label="YouTube" class="footer-social">
+                <i class="fab fa-youtube"></i>
+              </a>
+            </div>
           </div>
 
-          <!-- Quick Links -->
-          <div>
-            <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
-            <ul class="space-y-2 text-gray-400">
-              <li>
-                <router-link to="/home" class="hover:text-white transition">Home</router-link>
-              </li>
-              <li>
-                <router-link to="/products" class="hover:text-white transition"
-                  >Products</router-link
-                >
-              </li>
-              <li>
-                <router-link to="/about" class="hover:text-white transition">About</router-link>
-              </li>
-              <li>
-                <router-link to="/contact" class="hover:text-white transition">Contact</router-link>
-              </li>
+          <!-- Shop links -->
+          <div class="md:col-span-2">
+            <h4 class="footer-heading">Shop</h4>
+            <ul class="space-y-2.5">
+              <li><router-link to="/products" class="footer-link">Products</router-link></li>
+              <li><router-link to="/categories" class="footer-link">Categories</router-link></li>
+              <li><router-link to="/cart" class="footer-link">Cart</router-link></li>
+              <li><router-link to="/orders" class="footer-link">My Orders</router-link></li>
             </ul>
           </div>
 
-          <!-- Customer Service -->
-          <div>
-            <h4 class="text-lg font-semibold mb-4">Support</h4>
-            <ul class="space-y-2 text-gray-400">
-              <li><a href="#" class="hover:text-white transition">FAQs</a></li>
-              <li><a href="#" class="hover:text-white transition">Shipping Info</a></li>
-              <li><a href="#" class="hover:text-white transition">Returns</a></li>
-              <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+          <!-- Company links -->
+          <div class="md:col-span-2">
+            <h4 class="footer-heading">Company</h4>
+            <ul class="space-y-2.5">
+              <li><router-link to="/about" class="footer-link">About</router-link></li>
+              <li><router-link to="/contact" class="footer-link">Contact</router-link></li>
+              <li><a href="#" class="footer-link">Careers</a></li>
+              <li><a href="#" class="footer-link">Blog</a></li>
             </ul>
           </div>
 
-          <!-- Contact Info -->
-          <div>
-            <h4 class="text-lg font-semibold mb-4">Contact</h4>
-            <ul class="space-y-2 text-gray-400">
-              <li>support@onlineshop.com</li>
-              <li>+1-800-123-4567</li>
-              <li>123 Shop Street, City, Country</li>
-              <li class="flex gap-3 mt-4">
-                <a href="#" class="text-blue-400 hover:text-blue-300">Facebook</a>
-                <a href="#" class="text-blue-400 hover:text-blue-300">Twitter</a>
-                <a href="#" class="text-blue-400 hover:text-blue-300">Instagram</a>
-              </li>
+          <!-- Support links -->
+          <div class="md:col-span-2">
+            <h4 class="footer-heading">Support</h4>
+            <ul class="space-y-2.5">
+              <li><a href="#" class="footer-link">FAQs</a></li>
+              <li><a href="#" class="footer-link">Shipping</a></li>
+              <li><a href="#" class="footer-link">Returns</a></li>
+              <li><a href="#" class="footer-link">Privacy Policy</a></li>
             </ul>
           </div>
+
         </div>
 
-        <hr class="border-gray-700 mb-6" />
-        <div class="text-center text-gray-400">
-          <p>&copy; 2024 Online Shop. All rights reserved.</p>
+        <!-- Bottom bar -->
+        <div class="border-t border-gray-100 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p class="text-xs text-gray-500">&copy; 2024 Online Shop. All rights reserved.</p>
+          <div class="flex items-center gap-4 text-xs text-gray-500">
+            <a href="#" class="hover:text-gray-900 transition">Terms</a>
+            <a href="#" class="hover:text-gray-900 transition">Privacy</a>
+            <a href="#" class="hover:text-gray-900 transition">Cookies</a>
+          </div>
         </div>
       </div>
     </footer>
   </div>
 </template>
 
+<script>
+import Navbar from '@/components/Navbar.vue'
+
+export default {
+  name: 'MainLayout',
+  components: { Navbar },
+}
+</script>
+
+<style scoped>
+.footer-heading {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  margin-bottom: 0.875rem;
+}
+.footer-link {
+  font-size: 0.875rem;
+  color: #6b7280;
+  transition: color 0.15s ease;
+}
+.footer-link:hover {
+  color: #111827;
+}
+.footer-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  color: #6b7280;
+  font-size: 0.8rem;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.footer-social:hover {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+}
+</style>

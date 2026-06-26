@@ -291,29 +291,6 @@
 
     
 
-    <!-- Newsletter CTA -->
-    <section class="bg-blue-600 text-white py-16 px-4">
-      <div class="max-w-2xl mx-auto text-center">
-        <h2 class="text-4xl font-bold mb-4">Subscribe to Our Newsletter</h2>
-        <p class="text-lg mb-8">
-          Get exclusive deals, new product launches, and special offers delivered to your inbox!
-        </p>
-        <div class="flex flex-col md:flex-row gap-3">
-          <input
-            type="email"
-            placeholder="Enter your email address"
-            class="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none"
-          />
-          <button
-            class="bg-white text-blue-600 font-bold px-8 py-3 rounded-lg hover:bg-gray-100 transition whitespace-nowrap"
-          >
-            Subscribe Now
-          </button>
-        </div>
-        <p class="text-sm text-blue-100 mt-4">No spam, just great deals. Unsubscribe anytime.</p>
-      </div>
-    </section>
-
     <!-- CTA Section -->
     <section class="bg-gray-900 text-white py-16 px-4">
       <div class="max-w-7xl mx-auto text-center">
