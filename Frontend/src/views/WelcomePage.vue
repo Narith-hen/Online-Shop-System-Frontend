@@ -45,22 +45,22 @@
       <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div class="text-center">
-            <div class="text-4xl mb-3">🏆</div>
+            <div class="text-4xl mb-3"><i class="fas fa-trophy text-yellow-500"></i></div>
             <h3 class="font-bold text-lg mb-1">Award Winning</h3>
             <p class="text-gray-600">Best Online Store 2024</p>
           </div>
           <div class="text-center">
-            <div class="text-4xl mb-3">✅</div>
+            <div class="text-4xl mb-3"><i class="fas fa-shield-alt text-green-500"></i></div>
             <h3 class="font-bold text-lg mb-1">Verified Safe</h3>
             <p class="text-gray-600">SSL Encrypted & Secure</p>
           </div>
           <div class="text-center">
-            <div class="text-4xl mb-3">👥</div>
+            <div class="text-4xl mb-3"><i class="fas fa-users text-blue-500"></i></div>
             <h3 class="font-bold text-lg mb-1">50K+ Happy Customers</h3>
             <p class="text-gray-600">Trusted Worldwide</p>
           </div>
           <div class="text-center">
-            <div class="text-4xl mb-3">⭐</div>
+            <div class="text-4xl mb-3"><i class="fas fa-star text-yellow-400"></i></div>
             <h3 class="font-bold text-lg mb-1">4.9/5 Rating</h3>
             <p class="text-gray-600">Based on 10K+ Reviews</p>
           </div>
@@ -75,7 +75,7 @@
         <div
           class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg p-8 text-center hover:shadow-lg transition cursor-pointer"
         >
-          <div class="text-6xl mb-4">🎧</div>
+          <div class="text-6xl mb-4"><i class="fas fa-headphones text-blue-600"></i></div>
           <h3 class="text-2xl font-bold text-gray-900 mb-2">Electronics</h3>
           <p class="text-gray-700 mb-4">Latest gadgets & devices</p>
           <button class="text-blue-600 font-bold hover:text-blue-800">Browse →</button>
@@ -84,7 +84,7 @@
         <div
           class="bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg p-8 text-center hover:shadow-lg transition cursor-pointer"
         >
-          <div class="text-6xl mb-4">🖱️</div>
+          <div class="text-6xl mb-4"><i class="fas fa-mouse text-purple-600"></i></div>
           <h3 class="text-2xl font-bold text-gray-900 mb-2">Accessories</h3>
           <p class="text-gray-700 mb-4">Premium add-ons & extras</p>
           <button class="text-purple-600 font-bold hover:text-purple-800">Browse →</button>
@@ -93,7 +93,7 @@
         <div
           class="bg-gradient-to-br from-pink-100 to-pink-200 rounded-lg p-8 text-center hover:shadow-lg transition cursor-pointer"
         >
-          <div class="text-6xl mb-4">⚡</div>
+          <div class="text-6xl mb-4"><i class="fas fa-bolt text-pink-500"></i></div>
           <h3 class="text-2xl font-bold text-gray-900 mb-2">Power Solutions</h3>
           <p class="text-gray-700 mb-4">Chargers & cables</p>
           <button class="text-pink-600 font-bold hover:text-pink-800">Browse →</button>
@@ -102,7 +102,7 @@
         <div
           class="bg-gradient-to-br from-green-100 to-green-200 rounded-lg p-8 text-center hover:shadow-lg transition cursor-pointer"
         >
-          <div class="text-6xl mb-4">🎯</div>
+          <div class="text-6xl mb-4"><i class="fas fa-bullseye text-green-600"></i></div>
           <h3 class="text-2xl font-bold text-gray-900 mb-2">Smart Gadgets</h3>
           <p class="text-gray-700 mb-4">IoT & smart devices</p>
           <button class="text-green-600 font-bold hover:text-green-800">Browse →</button>
@@ -116,51 +116,39 @@
         <h2 class="text-4xl font-bold text-center mb-12">Why Shop With Us?</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div class="bg-white rounded-lg p-8 shadow-md">
-            <div class="text-5xl mb-4">🚚</div>
+            <div class="text-5xl mb-4"><i class="fas fa-truck text-blue-500"></i></div>
             <h3 class="text-2xl font-bold mb-3">Fast Shipping</h3>
-            <p class="text-gray-600">
-              Free shipping on orders over $50. Get your products within 3-5 business days.
-            </p>
+            <p class="text-gray-600">Free shipping on orders over $50. Get your products within 3-5 business days.</p>
           </div>
 
           <div class="bg-white rounded-lg p-8 shadow-md">
-            <div class="text-5xl mb-4">💰</div>
+            <div class="text-5xl mb-4"><i class="fas fa-dollar-sign text-green-500"></i></div>
             <h3 class="text-2xl font-bold mb-3">Best Prices</h3>
-            <p class="text-gray-600">
-              We guarantee the lowest prices on the market. Price match guarantee on all products.
-            </p>
+            <p class="text-gray-600">We guarantee the lowest prices on the market. Price match guarantee on all products.</p>
           </div>
 
           <div class="bg-white rounded-lg p-8 shadow-md">
-            <div class="text-5xl mb-4">🔒</div>
+            <div class="text-5xl mb-4"><i class="fas fa-lock text-purple-500"></i></div>
             <h3 class="text-2xl font-bold mb-3">Secure Payment</h3>
-            <p class="text-gray-600">
-              Your payments are 100% secure with SSL encryption and multiple payment options.
-            </p>
+            <p class="text-gray-600">Your payments are 100% secure with SSL encryption and multiple payment options.</p>
           </div>
 
           <div class="bg-white rounded-lg p-8 shadow-md">
-            <div class="text-5xl mb-4">🔄</div>
+            <div class="text-5xl mb-4"><i class="fas fa-undo-alt text-orange-500"></i></div>
             <h3 class="text-2xl font-bold mb-3">Easy Returns</h3>
-            <p class="text-gray-600">
-              30-day money-back guarantee. Return any product hassle-free if you're not satisfied.
-            </p>
+            <p class="text-gray-600">30-day money-back guarantee. Return any product hassle-free if you're not satisfied.</p>
           </div>
 
           <div class="bg-white rounded-lg p-8 shadow-md">
-            <div class="text-5xl mb-4">💬</div>
+            <div class="text-5xl mb-4"><i class="fas fa-headset text-teal-500"></i></div>
             <h3 class="text-2xl font-bold mb-3">24/7 Support</h3>
-            <p class="text-gray-600">
-              Our dedicated support team is available round the clock to help you with any issues.
-            </p>
+            <p class="text-gray-600">Our dedicated support team is available round the clock to help you with any issues.</p>
           </div>
 
           <div class="bg-white rounded-lg p-8 shadow-md">
-            <div class="text-5xl mb-4">🎁</div>
+            <div class="text-5xl mb-4"><i class="fas fa-gift text-red-400"></i></div>
             <h3 class="text-2xl font-bold mb-3">Special Offers</h3>
-            <p class="text-gray-600">
-              Exclusive deals, flash sales, and loyalty rewards for our valued customers.
-            </p>
+            <p class="text-gray-600">Exclusive deals, flash sales, and loyalty rewards for our valued customers.</p>
           </div>
         </div>
       </div>
@@ -189,7 +177,7 @@
           </div>
           <div class="p-4">
             <div class="flex items-center gap-1 mb-2">
-              <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+              <span class="text-yellow-400"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
               <span class="text-gray-600 text-sm">(256)</span>
             </div>
             <h3 class="font-bold text-lg mb-2">Premium Product</h3>
@@ -225,7 +213,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="bg-white rounded-lg p-8 shadow-md">
             <div class="flex items-center gap-1 mb-4">
-              <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+              <span class="text-yellow-400"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
             </div>
             <p class="text-gray-600 mb-4">
               "Amazing selection and great prices! The checkout process was smooth and my order
@@ -246,7 +234,7 @@
 
           <div class="bg-white rounded-lg p-8 shadow-md">
             <div class="flex items-center gap-1 mb-4">
-              <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+              <span class="text-yellow-400"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
             </div>
             <p class="text-gray-600 mb-4">
               "Fast shipping and excellent customer service. The product quality is outstanding.
@@ -267,7 +255,7 @@
 
           <div class="bg-white rounded-lg p-8 shadow-md">
             <div class="flex items-center gap-1 mb-4">
-              <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+              <span class="text-yellow-400"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
             </div>
             <p class="text-gray-600 mb-4">
               "Best online shopping experience I've had! Great product variety, competitive prices,
@@ -344,9 +332,9 @@
           <div>
             <h4 class="text-lg font-semibold text-white mb-4">Contact</h4>
             <ul class="space-y-2 text-sm">
-              <li>📧 support@onlineshop.com</li>
-              <li>📞 +1-800-123-4567</li>
-              <li>📍 123 Shop Street, City</li>
+              <li><i class="fas fa-envelope mr-2"></i> support@onlineshop.com</li>
+              <li><i class="fas fa-phone mr-2"></i> +855 12 345 678</li>
+              <li><i class="fas fa-map-marker-alt mr-2"></i> 123 Shop Street, Phnom Penh</li>
             </ul>
           </div>
         </div>

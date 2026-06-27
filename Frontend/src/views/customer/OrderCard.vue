@@ -313,7 +313,7 @@ export default {
       try {
         const token = localStorage.getItem('token')
         const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders?page=${page}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
         })
         if (res.ok) {
           const data = await res.json()
@@ -353,7 +353,7 @@ export default {
         const token = localStorage.getItem('token')
         const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/items/${item.id}/cancel`, {
           method: 'POST',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
         })
         if (res.ok) {
           const data = await res.json()
@@ -377,7 +377,7 @@ export default {
         const token = localStorage.getItem('token')
         const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/items/${item.id}/return`, {
           method: 'POST',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
         })
         if (res.ok) {
           const data = await res.json()
@@ -400,7 +400,7 @@ export default {
         const token = localStorage.getItem('token')
         const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/items/${item.id}/reorder`, {
           method: 'POST',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
         })
         if (res.ok) {
           alert('Item added to your cart!')
@@ -426,6 +426,7 @@ export default {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
+            Accept: 'application/json',
           },
         })
         if (res.ok) {

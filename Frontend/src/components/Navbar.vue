@@ -151,26 +151,8 @@
             </div>
           </template>
 
-          <!-- Logged-in admin: admin link + logout -->
-          <template v-else-if="isAdmin">
-            <router-link
-              to="/dashboard"
-              class="text-gray-600 hover:text-gray-900 font-medium transition px-3 py-2 text-sm"
-            >
-              Dashboard
-            </router-link>
-            <button
-              @click="handleLogout"
-              class="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-lg transition text-sm"
-            >
-              <i class="fas fa-right-from-bracket"></i>
-              Logout
-            </button>
-          </template>
-
-          <!-- Mobile menu toggle (customer/guest) -->
+          <!-- Mobile menu toggle -->
           <button
-            v-if="!isAdmin"
             @click="mobileOpen = !mobileOpen"
             class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition"
             aria-label="Menu"
@@ -243,7 +225,6 @@ refreshAuth()
 
 const isLoggedIn = computed(() => !!authState.value.token)
 const isCustomer = computed(() => authState.value.user.role === 'customer')
-const isAdmin = computed(() => authState.value.user.role === 'admin')
 const userName = computed(() => authState.value.user.name || 'Customer')
 const userEmail = computed(() => authState.value.user.email || '')
 const initial = computed(() => (userName.value ? userName.value.charAt(0).toUpperCase() : '?'))
@@ -343,7 +324,7 @@ const markAllRead = async () => {
     const token = localStorage.getItem('token')
     await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/notifications/read-all`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
     })
     notifications.value.forEach(n => { n.read = true })
     unreadCount.value = 0
@@ -356,7 +337,7 @@ const handleNotifClick = async (n) => {
       const token = localStorage.getItem('token')
       await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/notifications/${n.id}/read`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
       })
       n.read = true
       unreadCount.value = Math.max(0, unreadCount.value - 1)

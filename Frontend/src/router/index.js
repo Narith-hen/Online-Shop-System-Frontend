@@ -2,9 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import Login from '@/components/Auth/Login.vue'
 import Register from '@/components/Auth/Register.vue'
-import dashboard from '@/views/admin/dashboard.vue'
 import NotFound from '@/views/NotFound.vue'
-import AdminLayout from '@/components/layouts/AdminLayout.vue'
 import MainLayout from '@/components/layouts/MainLayout.vue'
 
 // Customer Views
@@ -52,25 +50,6 @@ const routes = [
     name: 'AuthCallback',
     component: AuthCallback,
     meta: { guest: true }           // No auth required - this is where users land after OAuth
-  },
-
-  // ==================== ADMIN ROUTES ====================
-  {
-    path: '/admin',
-    component: AdminLayout,
-    meta: { requiresAuth: true, role: 'admin' },
-    children: [
-      {
-        path: '',
-        redirect: { name: 'AdminDashboard' }
-      },
-      {
-        path: 'dashboard',
-        name: 'AdminDashboard',
-        component: dashboard,
-        meta: { title: 'Dashboard' }
-      },
-    ]
   },
 
   // ==================== CUSTOMER ROUTES ====================
@@ -171,28 +150,25 @@ router.beforeEach((to, from, next) => {
 
   // Redirect logged-in users away from guest-only pages (e.g. /login)
   if (to.meta.guest && token) {
-    if (userRole === 'admin') {
-      next('/admin/dashboard')
-    } else {
-      next('/home')
-    }
+    next('/home')
     return
   }
 
-  // Check protected routes
-  if (to.meta.requiresAuth) {
+  // Check protected routes using matched route records (handles meta inheritance)
+  const matchedRoute = to.matched.find(r => r.meta.requiresAuth)
+  if (matchedRoute) {
     if (!token) {
       next('/login')
       return
     }
 
-    // Role check — redirect to correct dashboard if role doesn't match
-    if (to.meta.role && userRole !== to.meta.role) {
-      if (userRole === 'admin') {
-        next('/admin/dashboard')
-      } else {
-        next('/home')
+    const requiredRole = matchedRoute.meta.role
+    if (requiredRole && userRole !== requiredRole) {
+      if (to.path === '/home') {
+        next()
+        return
       }
+      next('/home')
       return
     }
   }

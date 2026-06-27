@@ -6,7 +6,7 @@
     <main class="flex-1">
       <router-view v-slot="{ Component }">
         <transition name="route" mode="out-in">
-          <component :is="Component" />
+          <component :is="Component" :key="$route.fullPath" />
         </transition>
       </router-view>
     </main>

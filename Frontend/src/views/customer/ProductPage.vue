@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="max-w-7xl mx-auto px-4 py-8">
     <h1 class="text-4xl font-bold mb-8 animate-fade-in-down">Our Products</h1>
 
@@ -167,13 +168,18 @@
           </div>
         </div>
       </div>
+      </div>
     </div>
+    <SuccessModal ref="successModal" />
   </div>
 </template>
 
 <script>
+import SuccessModal from '@/components/SuccessModal.vue'
+
 export default {
   name: 'Products',
+  components: { SuccessModal },
   data() {
     return {
       products: [],
@@ -253,6 +259,7 @@ export default {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
+            Accept: 'application/json',
           },
           body: JSON.stringify({
             product_id: product.id,
@@ -260,7 +267,7 @@ export default {
           }),
         })
         if (res.ok) {
-          alert('Added to cart!')
+          this.$refs.successModal.show('You ordered product "' + product.name + '" successfully.')
         } else {
           const data = await res.json()
           alert(data.message || 'Failed to add to cart.')

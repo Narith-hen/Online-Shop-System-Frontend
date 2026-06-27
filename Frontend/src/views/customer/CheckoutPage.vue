@@ -203,10 +203,19 @@
                 </div>
               </label>
             </div>
-            <p v-if="paymentMethod && !orderPlaced" class="mt-3 text-xs text-blue-600">
-              <i class="fas fa-info-circle mr-1"></i>
-              You'll scan the QR code after placing your order.
-            </p>
+            <!-- QR Code Preview -->
+            <div v-if="paymentMethod && !orderPlaced" class="mt-6 text-center border-t border-gray-100 pt-6">
+              <h4 class="font-bold text-gray-900 mb-3">Scan to Pay with ABA KHQR</h4>
+              <div class="inline-block bg-gray-50 rounded-lg p-4 mb-3">
+                <img
+                  :src="selectedMethodPreview?.qr_url || ''"
+                  alt="ABA KHQR"
+                  class="w-64 h-64 object-contain mx-auto rounded"
+                />
+              </div>
+              <p class="text-sm text-gray-600 mb-1">Open ABA Mobile app and scan this QR code</p>
+              <p class="text-sm text-gray-500">You will upload the payment screenshot after placing your order</p>
+            </div>
           </div>
 
           <!-- Order Items -->
@@ -338,6 +347,9 @@ export default {
     estimatedTotal() {
       return (this.subtotal + this.subtotal * 0.1).toFixed(2)
     },
+    selectedMethodPreview() {
+      return this.paymentMethods.find(m => m.code === this.paymentMethod) || null
+    },
   },
   async mounted() {
     await Promise.all([this.fetchCart(), this.fetchPaymentMethods()])
@@ -349,7 +361,7 @@ export default {
       try {
         const token = localStorage.getItem('token')
         const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/cart`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
         })
         if (res.ok) {
           const data = await res.json()
@@ -367,11 +379,11 @@ export default {
       try {
         const token = localStorage.getItem('token')
         const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
         })
         if (res.ok) {
           const data = await res.json()
-          const user = data.data || data || {}
+          const user = data.user || data.data || {}
           if (!this.shipping.name && user.name) this.shipping.name = user.name
           if (!this.shipping.email && user.email) this.shipping.email = user.email
         }
@@ -405,8 +417,16 @@ export default {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
+            Accept: 'application/json',
           },
-          body: JSON.stringify({ payment_method: this.paymentMethod }),
+          body: JSON.stringify({
+            payment_method: this.paymentMethod,
+            shipping_name: this.shipping.name,
+            shipping_phone: this.shipping.phone,
+            shipping_address: this.shipping.address,
+            shipping_city: this.shipping.city,
+            shipping_zip: this.shipping.zip,
+          }),
         })
         const data = await res.json()
         if (res.ok) {
@@ -452,7 +472,7 @@ export default {
         formData.append('payment_proof', this.proofFile)
         const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${this.placedOrderId}/payment-proof`, {
           method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
           body: formData,
         })
         if (res.ok) {

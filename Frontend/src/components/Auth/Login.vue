@@ -27,11 +27,7 @@ onMounted(() => {
   const user = JSON.parse(localStorage.getItem('user') || '{}')
 
   if (token) {
-    if (user.role === 'admin') {
-      router.replace('/dashboard')
-    } else {
-      router.replace('/home')
-    }
+    router.replace('/home')
   }
 })
 
@@ -78,9 +74,7 @@ const handleLogin = async () => {
 
       setTimeout(() => {
         message.value = ''
-        if (data.role === 'admin') {
-          router.push('/dashboard')
-        } else if (data.role === 'customer') {
+        if (data.role === 'customer') {
           router.push('/home')
         } else {
           router.push('/')

@@ -161,12 +161,16 @@
       <i class="fas fa-spinner fa-spin text-3xl text-blue-600"></i>
     </div>
 
+    <SuccessModal ref="successModal" />
   </div>
 </template>
 
 <script>
 import welcomeImg from '@/assets/images/welcome.png'
+import SuccessModal from '@/components/SuccessModal.vue'
+
 export default {
+  components: { SuccessModal },
   name: 'CustomerHome',
   data() {
     return {
@@ -207,6 +211,7 @@ export default {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
+            Accept: 'application/json',
           },
           body: JSON.stringify({
             product_id: product.id,
@@ -214,7 +219,7 @@ export default {
           }),
         })
         if (res.ok) {
-          alert('Added to cart!')
+          this.$refs.successModal.show('You ordered product "' + product.name + '" successfully.')
         } else {
           const data = await res.json()
           alert(data.message || 'Failed to add to cart.')

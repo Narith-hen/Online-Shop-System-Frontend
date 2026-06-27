@@ -40,11 +40,7 @@ onMounted(() => {
       status.value = 'Login successful! Redirecting...'
 
       setTimeout(() => {
-        if (user.role === 'admin') {
-          router.push('/dashboard')
-        } else {
-          router.push('/home')
-        }
+        router.push('/home')
       }, 500)
     } catch (e) {
       error.value = 'Failed to process login response'

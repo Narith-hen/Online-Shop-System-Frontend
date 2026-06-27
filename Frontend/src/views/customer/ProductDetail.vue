@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="max-w-7xl mx-auto px-4 py-8">
     <router-link to="/products" class="text-blue-600 hover:text-blue-800 mb-6 inline-block">
       &larr; Back to Products
@@ -39,7 +40,7 @@
         <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ product.name }}</h1>
 
         <div class="flex items-center gap-1 mb-4">
-          <span class="text-yellow-400">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span class="text-yellow-400"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
           <span class="text-gray-600 text-sm">(128 reviews)</span>
         </div>
 
@@ -101,12 +102,17 @@
         </div>
       </div>
     </div>
+    </div>
+    <SuccessModal ref="successModal" />
   </div>
 </template>
 
 <script>
+import SuccessModal from '@/components/SuccessModal.vue'
+
 export default {
   name: 'ProductDetail',
+  components: { SuccessModal },
   data() {
     return {
       product: null,
@@ -160,6 +166,7 @@ export default {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
+            Accept: 'application/json',
           },
           body: JSON.stringify({
             product_id: this.product.id,
@@ -167,7 +174,7 @@ export default {
           }),
         })
         if (res.ok) {
-          alert('Added to cart!')
+          this.$refs.successModal.show('You ordered product "' + this.product.name + '" successfully.')
         } else {
           const data = await res.json()
           alert(data.message || 'Failed to add to cart.')
@@ -188,6 +195,7 @@ export default {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
+            Accept: 'application/json',
           },
           body: JSON.stringify({ product_id: this.product.id }),
         })

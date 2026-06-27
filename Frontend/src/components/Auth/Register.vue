@@ -10,11 +10,7 @@ onMounted(() => {
   const user = JSON.parse(localStorage.getItem('user') || '{}')
 
   if (token) {
-    if (user.role === 'admin') {
-      router.replace('/dashboard')
-    } else {
-      router.replace('/home')
-    }
+    router.replace('/home')
   }
 })
 
@@ -109,11 +105,7 @@ const handleRegister = async () => {
       message_type.value = 'success'
 
       setTimeout(() => {
-        if (data.role === 'admin') {
-          router.push('/dashboard')
-        } else {
-          router.push('/home')
-        }
+        router.push('/home')
       }, 900)
     } else {
       if (data.errors) {
