@@ -60,12 +60,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-    <div class="bg-white rounded-xl shadow-2xl p-12 max-w-md w-full text-center">
+  <div class="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-2xl p-12 max-w-md w-full text-center animate-scale-in">
       <!-- Loading Spinner -->
       <div v-if="!error" class="mb-6">
         <svg
-          class="animate-spin mx-auto h-12 w-12 text-blue-600"
+          class="animate-spin mx-auto h-12 w-12 text-blue-500"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"

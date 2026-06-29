@@ -11,7 +11,7 @@
           <p class="text-gray-600 mb-6">{{ message }}</p>
           <button
             @click="close"
-            class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition"
+            class="w-full bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition"
           >
             OK
           </button>

@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-3xl mx-auto px-4 py-8">
     <div v-if="loading" class="text-center py-16">
-      <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+      <i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i>
       <p class="text-gray-500">Loading receipt...</p>
     </div>
 
@@ -11,7 +11,7 @@
       </div>
       <h3 class="text-xl font-bold text-gray-900 mb-2">Receipt Not Found</h3>
       <p class="text-gray-500 mb-6">{{ error }}</p>
-      <router-link to="/orders" class="inline-block bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition">Back to Orders</router-link>
+      <router-link to="/orders" class="inline-block bg-blue-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-600 transition">Back to Orders</router-link>
     </div>
 
     <div v-else-if="order" class="space-y-6">
@@ -104,7 +104,7 @@
             <hr class="my-2" />
             <div class="flex justify-between text-lg font-bold text-gray-900">
               <span>Total</span>
-              <span class="text-blue-600">${{ order.total?.toFixed(2) }}</span>
+              <span class="text-blue-500">${{ order.total?.toFixed(2) }}</span>
             </div>
           </div>
         </div>
@@ -189,7 +189,7 @@ export default {
     paymentStatusClass(status) {
       const classes = {
         unpaid: 'bg-yellow-100 text-yellow-800',
-        pending_verification: 'bg-blue-100 text-blue-800',
+        pending_verification: 'bg-blue-200 text-blue-700',
         verified: 'bg-green-100 text-green-800',
         failed: 'bg-red-100 text-red-800',
       }

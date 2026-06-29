@@ -26,13 +26,13 @@
         <div class="flex flex-col md:flex-row gap-4 justify-center">
           <router-link
             to="/home"
-            class="inline-block bg-white text-blue-600 font-bold py-4 px-10 rounded-lg hover:bg-gray-100 transition text-lg"
+            class="inline-block bg-white text-blue-500 font-bold py-4 px-10 rounded-lg hover:bg-gray-100 transition text-lg"
           >
             Start Shopping
           </router-link>
 
           <button
-            class="inline-block border-2 border-white font-bold py-4 px-10 rounded-lg hover:bg-white hover:text-blue-600 transition text-lg"
+            class="inline-block border-2 border-white font-bold py-4 px-10 rounded-lg hover:bg-white hover:text-blue-500 transition text-lg"
           >
             Watch Demo
           </button>
@@ -75,10 +75,10 @@
         <div
           class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg p-8 text-center hover:shadow-lg transition cursor-pointer"
         >
-          <div class="text-6xl mb-4"><i class="fas fa-headphones text-blue-600"></i></div>
+          <div class="text-6xl mb-4"><i class="fas fa-headphones text-blue-500"></i></div>
           <h3 class="text-2xl font-bold text-gray-900 mb-2">Electronics</h3>
           <p class="text-gray-700 mb-4">Latest gadgets & devices</p>
-          <button class="text-blue-600 font-bold hover:text-blue-800">Browse →</button>
+          <button class="text-blue-500 font-bold hover:text-blue-600">Browse →</button>
         </div>
 
         <div
@@ -161,35 +161,31 @@
         <div
           v-for="product in 4"
           :key="product"
-          class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition"
+          class="product-card"
         >
           <div class="relative">
             <img
               src="https://via.placeholder.com/300x200?text=Product"
               alt="Product"
-              class="w-full h-48 object-cover"
+              class="product-img w-full h-48 object-cover"
             />
-            <div
-              class="absolute top-3 right-3 bg-red-500 text-white px-4 py-1 rounded-full text-sm font-bold"
-            >
+            <div class="absolute top-3 right-3 bg-red-500 text-white px-3 py-0.5 rounded-full text-xs font-bold">
               -30%
             </div>
           </div>
           <div class="p-4">
             <div class="flex items-center gap-1 mb-2">
-              <span class="text-yellow-400"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
-              <span class="text-gray-600 text-sm">(256)</span>
+              <span v-for="s in 5" :key="s" class="text-yellow-400 text-xs"><i class="fas fa-star"></i></span>
+              <span class="text-gray-400 text-xs ml-1">(256)</span>
             </div>
-            <h3 class="font-bold text-lg mb-2">Premium Product</h3>
-            <p class="text-gray-600 text-sm mb-3">High quality with amazing features</p>
+            <h3 class="font-bold text-lg mb-1">Premium Product</h3>
+            <p class="text-gray-500 text-sm mb-3">High quality with amazing features</p>
             <div class="flex justify-between items-center">
               <div>
-                <span class="text-2xl font-bold text-blue-600">$49.99</span>
+                <span class="text-2xl font-bold text-blue-500">$49.99</span>
                 <span class="text-sm text-gray-400 line-through ml-2">$69.99</span>
               </div>
-              <button
-                class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition text-sm"
-              >
+              <button class="bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 transition text-sm font-medium">
                 Add
               </button>
             </div>
@@ -199,7 +195,7 @@
       <div class="text-center mt-12">
         <router-link
           to="/home"
-          class="inline-block bg-gray-900 text-white font-bold py-3 px-10 rounded-lg hover:bg-gray-800 transition"
+          class="btn-primary text-base py-3 px-10"
         >
           View All Products
         </router-link>
@@ -287,7 +283,7 @@
         <div class="flex flex-col md:flex-row gap-4 justify-center">
           <router-link
             to="/home"
-            class="inline-block bg-blue-600 text-white font-bold py-4 px-10 rounded-lg hover:bg-blue-700 transition text-lg"
+            class="btn-primary text-lg py-4 px-10"
           >
             Enter the Shop
           </router-link>

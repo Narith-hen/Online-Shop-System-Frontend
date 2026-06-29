@@ -1,224 +1,203 @@
 <template>
   <div>
-    <!-- Header -->
-    <section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12 px-4">
-      <div class="max-w-7xl mx-auto text-center animate-fade-in-down">
+    <section class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-16 px-4 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-10 right-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
+        <div class="absolute bottom-10 left-10 w-48 h-48 bg-white rounded-full blur-3xl"></div>
+      </div>
+      <div class="max-w-7xl mx-auto text-center relative animate-fade-in-down">
         <h1 class="text-5xl font-bold mb-4">Contact Us</h1>
-        <p class="text-xl">We'd love to hear from you. Get in touch with us today!</p>
+        <p class="text-xl text-blue-100 max-w-2xl mx-auto">We'd love to hear from you. Get in touch with us today!</p>
       </div>
     </section>
 
-    <!-- Contact Content -->
-    <div class="max-w-7xl mx-auto px-4 py-12">
-      
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-        
-        <!-- Contact Information Cards -->
-        <div class="bg-white rounded-lg shadow-md p-8 animate-fade-in-up" style="animation-delay: 0ms">
-          <div class="text-4xl mb-4">📧</div>
-          <h3 class="text-xl font-bold mb-2">Email</h3>
-          <p class="text-gray-600 mb-2">Get in touch via email</p>
-          <a href="mailto:support@onlineshop.com" class="text-blue-600 font-semibold hover:text-blue-800">
-            support@onlineshop.com
+    <div class="max-w-7xl mx-auto px-4 py-16">
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div v-for="(card, i) in contactCards" :key="i"
+          class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in-up text-center group"
+          :style="{ animationDelay: `${i * 100}ms` }">
+          <div class="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform"
+            :class="card.bg">
+            <i :class="card.icon"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">{{ card.title }}</h3>
+          <p class="text-gray-500 text-sm mb-3">{{ card.subtitle }}</p>
+          <a v-if="card.href" :href="card.href" class="text-blue-500 font-semibold hover:text-blue-600 transition text-sm">
+            {{ card.value }}
           </a>
-          <p class="text-gray-500 text-sm mt-2">Response time: 24 hours</p>
+          <p v-else class="text-blue-500 font-semibold text-sm leading-relaxed" v-html="card.value"></p>
+          <p class="text-gray-400 text-xs mt-2">{{ card.note }}</p>
         </div>
-
-        <div class="bg-white rounded-lg shadow-md p-8 animate-fade-in-up" style="animation-delay: 120ms">
-          <div class="text-4xl mb-4">📞</div>
-          <h3 class="text-xl font-bold mb-2">Phone</h3>
-          <p class="text-gray-600 mb-2">Call us during business hours</p>
-          <a href="tel:+18001234567" class="text-blue-600 font-semibold hover:text-blue-800">
-            +1-800-123-4567
-          </a>
-          <p class="text-gray-500 text-sm mt-2">Mon-Fri: 9 AM - 6 PM EST</p>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-md p-8 animate-fade-in-up" style="animation-delay: 240ms">
-          <div class="text-4xl mb-4">📍</div>
-          <h3 class="text-xl font-bold mb-2">Address</h3>
-          <p class="text-gray-600 mb-2">Visit our office</p>
-          <p class="text-blue-600 font-semibold">
-            123 Shop Street<br/>
-            New York, NY 10001<br/>
-            United States
-          </p>
-        </div>
-
       </div>
 
-      <!-- Contact Form -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        
-        <!-- Form -->
-        <div class="animate-fade-in-left">
-          <h2 class="text-3xl font-bold mb-8">Send us a Message</h2>
-          <form @submit.prevent="submitForm" class="space-y-6">
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-12">
+
+        <div class="lg:col-span-3 animate-fade-in-left">
+          <span class="text-sm font-semibold text-blue-500 uppercase tracking-wider">Get In Touch</span>
+          <h2 class="text-3xl font-bold text-gray-900 mt-2 mb-8">Send us a Message</h2>
+
+          <form @submit.prevent="submitForm" class="space-y-5" novalidate>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
-                <input 
-                  type="text" 
-                  v-model="form.firstName"
-                  placeholder="John" 
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600"
-                  required
-                />
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">First Name <span class="text-red-500">*</span></label>
+                <input type="text" v-model="form.firstName" placeholder="John"
+                  class="form-input" :class="{ error: errors.firstName }" required />
+                <p v-if="errors.firstName" class="text-red-500 text-xs mt-1">{{ errors.firstName }}</p>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
-                <input 
-                  type="text" 
-                  v-model="form.lastName"
-                  placeholder="Smith" 
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600"
-                  required
-                />
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Last Name <span class="text-red-500">*</span></label>
+                <input type="text" v-model="form.lastName" placeholder="Smith"
+                  class="form-input" :class="{ error: errors.lastName }" required />
+                <p v-if="errors.lastName" class="text-red-500 text-xs mt-1">{{ errors.lastName }}</p>
               </div>
             </div>
 
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-              <input 
-                type="email" 
-                v-model="form.email"
-                placeholder="john@example.com" 
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600"
-                required
-              />
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email <span class="text-red-500">*</span></label>
+              <input type="email" v-model="form.email" placeholder="john@example.com"
+                class="form-input" :class="{ error: errors.email }" required />
+              <p v-if="errors.email" class="text-red-500 text-xs mt-1">{{ errors.email }}</p>
             </div>
 
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Phone (Optional)</label>
-              <input 
-                type="tel" 
-                v-model="form.phone"
-                placeholder="+1-800-123-4567" 
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600"
-              />
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Phone (Optional)</label>
+              <input type="tel" v-model="form.phone" placeholder="+1-800-123-4567"
+                class="form-input" />
             </div>
 
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Subject</label>
-              <select 
-                v-model="form.subject"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600"
-                required
-              >
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Subject <span class="text-red-500">*</span></label>
+              <select v-model="form.subject"
+                class="form-select" :class="{ error: errors.subject }" required>
                 <option value="">Select a subject</option>
                 <option value="order">Order Inquiry</option>
                 <option value="shipping">Shipping Question</option>
-                <option value="return">Return/Exchange</option>
-                <option value="feedback">Feedback</option>
+                <option value="return">Return / Exchange</option>
+                <option value="feedback">Feedback / Suggestion</option>
                 <option value="other">Other</option>
               </select>
+              <p v-if="errors.subject" class="text-red-500 text-xs mt-1">{{ errors.subject }}</p>
             </div>
 
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Message</label>
-              <textarea 
-                v-model="form.message"
-                placeholder="Tell us how we can help..." 
-                rows="6"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600"
-                required
-              ></textarea>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Message <span class="text-red-500">*</span></label>
+              <textarea v-model="form.message" placeholder="Tell us how we can help..." rows="5"
+                class="form-input resize-none" :class="{ error: errors.message }" required></textarea>
+              <p v-if="errors.message" class="text-red-500 text-xs mt-1">{{ errors.message }}</p>
             </div>
 
-            <div class="flex items-center">
-              <input type="checkbox" id="agree" class="mr-2" required />
-              <label for="agree" class="text-sm text-gray-600">
-                I agree to the terms and privacy policy
-              </label>
-            </div>
+            <label class="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" v-model="form.agree"
+                class="mt-0.5 w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-400 accent-blue-500" />
+              <span class="text-sm text-gray-600">
+                I agree to the
+                <a href="#" class="text-blue-500 hover:text-blue-600 font-semibold">terms of service</a>
+                and
+                <a href="#" class="text-blue-500 hover:text-blue-600 font-semibold">privacy policy</a>.
+                <span class="text-red-500">*</span>
+              </span>
+            </label>
+            <p v-if="errors.agree" class="text-red-500 text-xs">{{ errors.agree }}</p>
 
-            <button 
-              type="submit"
-              class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition"
-            >
-              Send Message
+            <button type="submit" :disabled="submitting"
+              class="btn-primary w-full text-base py-3.5">
+              <i v-if="submitting" class="fas fa-spinner fa-spin mr-2"></i>
+              <i v-else class="fas fa-paper-plane mr-2"></i>
+              {{ submitting ? 'Sending...' : 'Send Message' }}
             </button>
-
           </form>
         </div>
 
-        <!-- Map or Additional Info -->
-        <div class="animate-fade-in-right">
-          <h2 class="text-3xl font-bold mb-8">Office Location</h2>
-          <img 
-            src="https://via.placeholder.com/400x500?text=Map" 
-            alt="Office Location Map" 
-            class="w-full rounded-lg shadow-lg mb-8"
-          />
-          
-          <h3 class="text-2xl font-bold mb-4">Business Hours</h3>
-          <div class="bg-gray-50 p-6 rounded-lg">
-            <div class="flex justify-between mb-2">
-              <span class="font-semibold">Monday - Friday</span>
-              <span class="text-gray-600">9:00 AM - 6:00 PM EST</span>
-            </div>
-            <div class="flex justify-between mb-2">
-              <span class="font-semibold">Saturday</span>
-              <span class="text-gray-600">10:00 AM - 4:00 PM EST</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="font-semibold">Sunday</span>
-              <span class="text-gray-600">Closed</span>
+        <div class="lg:col-span-2 animate-fade-in-right">
+          <div class="bg-gradient-to-br from-gray-50 to-blue-100 rounded-2xl p-8 mb-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6"><i class="fas fa-clock text-blue-500 mr-2"></i> Business Hours</h3>
+            <div class="space-y-4">
+              <div v-for="(hour, i) in businessHours" :key="i"
+                class="flex items-center justify-between py-2"
+                :class="i < businessHours.length - 1 ? 'border-b border-gray-200' : ''">
+                <span class="font-semibold text-gray-900">{{ hour.day }}</span>
+                <span :class="hour.closed ? 'text-red-500 font-semibold' : 'text-gray-600'">{{ hour.time }}</span>
+              </div>
             </div>
           </div>
 
-          <h3 class="text-2xl font-bold mt-8 mb-4">Follow Us</h3>
-          <div class="flex gap-4">
-            <a href="#" class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition">
-              f
-            </a>
-            <a href="#" class="w-12 h-12 bg-blue-400 text-white rounded-full flex items-center justify-center hover:bg-blue-500 transition">
-              𝕏
-            </a>
-            <a href="#" class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center hover:opacity-90 transition">
-              📷
-            </a>
-            <a href="#" class="w-12 h-12 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-700 transition">
-              ▶
-            </a>
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-6"><i class="fas fa-share-nodes text-blue-500 mr-2"></i> Follow Us</h3>
+            <div class="flex gap-3">
+              <a v-for="(social, i) in socialLinks" :key="i" :href="social.url" target="_blank" rel="noopener"
+                class="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                :style="{ background: social.color }"
+                :aria-label="social.name">
+                <i :class="social.icon"></i>
+              </a>
+            </div>
           </div>
         </div>
 
       </div>
-
     </div>
+
+    <Toast ref="toastRef" />
   </div>
 </template>
 
 <script>
+import Toast from '@/components/Toast.vue'
+
 export default {
-  name: 'Contact',
+  name: 'ContactPage',
+  components: { Toast },
   data() {
     return {
-      form: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      }
+      submitting: false,
+      form: { firstName: '', lastName: '', email: '', phone: '', subject: '', message: '', agree: false },
+      errors: {},
+      contactCards: [
+        { icon: 'fas fa-envelope text-blue-500 text-xl', bg: 'bg-blue-200', title: 'Email', subtitle: 'Get in touch via email', value: 'support@onlineshop.com', href: 'mailto:support@onlineshop.com', note: 'Response time: within 24 hours' },
+        { icon: 'fas fa-phone text-emerald-600 text-xl', bg: 'bg-emerald-100', title: 'Phone', subtitle: 'Call us during business hours', value: '+1-800-123-4567', href: 'tel:+18001234567', note: 'Mon-Fri: 9 AM - 6 PM EST' },
+        { icon: 'fas fa-location-dot text-purple-600 text-xl', bg: 'bg-purple-100', title: 'Address', subtitle: 'Visit our office', value: '123 Shop Street<br/>New York, NY 10001<br/>United States', note: 'Headquarters' },
+      ],
+      businessHours: [
+        { day: 'Monday - Friday', time: '9:00 AM - 6:00 PM EST' },
+        { day: 'Saturday', time: '10:00 AM - 4:00 PM EST' },
+        { day: 'Sunday', time: 'Closed', closed: true },
+      ],
+      socialLinks: [
+        { name: 'Facebook', icon: 'fab fa-facebook-f', color: '#1877F2', url: '#' },
+        { name: 'Twitter', icon: 'fab fa-x-twitter', color: '#000000', url: '#' },
+        { name: 'Instagram', icon: 'fab fa-instagram', color: '#E4405F', url: '#' },
+        { name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000', url: '#' },
+        { name: 'LinkedIn', icon: 'fab fa-linkedin-in', color: '#0A66C2', url: '#' },
+      ],
     }
   },
   methods: {
-    submitForm() {
-      alert('Thank you for contacting us! We will get back to you soon.');
-      // Reset form
-      this.form = {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      }
-    }
-  }
+    validate() {
+      const e = {}
+      if (!this.form.firstName.trim()) e.firstName = 'First name is required.'
+      if (!this.form.lastName.trim()) e.lastName = 'Last name is required.'
+      if (!this.form.email.trim()) e.email = 'Email is required.'
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email)) e.email = 'Please enter a valid email address.'
+      if (!this.form.subject) e.subject = 'Please select a subject.'
+      if (!this.form.message.trim()) e.message = 'Message is required.'
+      else if (this.form.message.trim().length < 10) e.message = 'Message must be at least 10 characters.'
+      if (!this.form.agree) e.agree = 'You must agree to the terms and privacy policy.'
+      this.errors = e
+      return Object.keys(e).length === 0
+    },
+    async submitForm() {
+      if (!this.validate()) return
+      this.submitting = true
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1200))
+        this.$refs.toastRef?.show({ type: 'success', title: 'Message Sent!', message: 'Thank you for contacting us! We will get back to you within 24 hours.' })
+        this.form = { firstName: '', lastName: '', email: '', phone: '', subject: '', message: '', agree: false }
+        this.errors = {}
+      } catch {
+        this.$refs.toastRef?.show({ type: 'error', title: 'Error', message: 'Failed to send message. Please try again later.' })
+      } finally { this.submitting = false }
+    },
+  },
 }
 </script>

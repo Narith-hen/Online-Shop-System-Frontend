@@ -4,11 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"vite\" \"node server/socket.js\"",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "prettier --write --experimental-cli src/",
-    "socket": "node socket-server.js"
+    "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
@@ -16,6 +15,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@fortawesome/vue-fontawesome": "^3.2.0",
     "@tailwindcss/vite": "^4.3.1",
+    "pinia": "^3.0.4",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "vue": "^3.5.38",
@@ -25,6 +25,7 @@
     "@tailwindcss/postcss": "^4.3.1",
     "@vitejs/plugin-vue": "^6.0.7",
     "autoprefixer": "^10.5.0",
+    "concurrently": "^10.0.3",
     "postcss": "^8.5.15",
     "prettier": "3.8.4",
     "tailwindcss": "^4.3.1",
