@@ -1,45 +1,28 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 flex items-center justify-center px-4">
-    <div class="max-w-md w-full text-center">
-      <!-- 404 Illustration -->
-      <div class="mb-8">
-        <h1 class="text-[12rem] font-black text-white leading-none tracking-tighter opacity-90">
-          404
-        </h1>
-        <p class="text-4xl font-semibold text-white mt-[-20px]">
-          Oops!
-        </p>
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div class="text-center">
+      
+
+      <!-- 404 with Icon -->
+      <div class="flex items-center justify-center gap-2 mb-8">
+        <h1 class="text-7xl font-black text-red-500">4</h1>
+        <img src="/images/logo.png" alt="Online Shop" class="w-32" />
+        <h1 class="text-7xl font-black text-red-500">4</h1>
       </div>
 
-      <!-- Message -->
-      <div class="mb-10">
-        <p class="text-xl text-white/90 font-medium">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-      </div>
+      <!-- Main Title -->
+      <h2 class="text-4xl font-bold text-gray-900 mb-3">Oops! You're lost.</h2>
 
-      <!-- Action Buttons -->
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <router-link
-          to="/"
-          class="px-8 py-4 bg-white text-indigo-700 font-semibold rounded-2xl hover:bg-indigo-50 transition-all duration-300 flex items-center justify-center gap-2 text-lg"
-        >
-          <span>←</span>
-          Back to Home
-        </router-link>
+      <!-- Subtitle -->
+      <p class="text-lg text-gray-600 mb-12">The page you are looking for was not found.</p>
 
-        <button
-          @click="goBack"
-          class="px-8 py-4 border-2 border-white/80 text-white font-semibold rounded-2xl hover:bg-white/10 transition-all duration-300 text-lg"
-        >
-          Go Back
-        </button>
-      </div>
-
-      <!-- Optional extra help -->
-      <p class="mt-12 text-white/60 text-sm">
-        Need help? Contact support
-      </p>
+      <!-- Back to Home Button -->
+      <router-link
+        to="/"
+        class="inline-block bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-12 rounded-full transition duration-300"
+      >
+        Back to Home
+      </router-link>
     </div>
   </div>
 </template>
@@ -50,7 +33,7 @@ export default {
   methods: {
     goBack() {
       this.$router.go(-1)
-    }
-  }
+    },
+  },
 }
 </script>
