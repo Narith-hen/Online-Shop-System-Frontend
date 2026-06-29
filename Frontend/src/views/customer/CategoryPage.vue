@@ -1,12 +1,12 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 py-8">
     <div v-if="loading" class="text-center py-12">
-      <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+      <i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i>
       <p class="text-gray-500">Loading...</p>
     </div>
 
     <template v-else-if="selectedCategory">
-      <button @click="selectedCategory = null" class="text-blue-600 hover:text-blue-800 mb-6 inline-block">
+      <button @click="selectedCategory = null" class="text-blue-500 hover:text-blue-600 mb-6 inline-block">
         &larr; Back to Categories
       </button>
 
@@ -14,7 +14,7 @@
       <p class="text-gray-600 mb-8">{{ selectedCategory.description || 'Browse products in this category.' }}</p>
 
       <div v-if="productsLoading" class="text-center py-12">
-        <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+        <i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i>
         <p class="text-gray-500">Loading products...</p>
       </div>
 
@@ -38,13 +38,13 @@
               <img :src="product.image_url || 'https://via.placeholder.com/300x200'" :alt="product.name" class="w-full h-48 object-cover" />
             </router-link>
             <div class="p-4">
-              <router-link :to="`/products/${product.id}`" class="font-bold text-lg mb-2 block hover:text-blue-600">
+              <router-link :to="`/products/${product.id}`" class="font-bold text-lg mb-2 block hover:text-blue-500">
                 {{ product.name }}
               </router-link>
               <p class="text-gray-600 text-sm mb-4">{{ product.description || 'No description available.' }}</p>
               <div class="flex justify-between items-center">
-                <span class="text-2xl font-bold text-blue-600">${{ product.price?.toFixed(2) }}</span>
-                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Add</button>
+                <span class="text-2xl font-bold text-blue-500">${{ product.price?.toFixed(2) }}</span>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Add</button>
               </div>
             </div>
           </div>
@@ -87,14 +87,14 @@
           v-for="(category, index) in categories"
           :key="category.id"
           @click="selectCategory(category)"
-          class="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition border border-gray-200 hover:border-blue-600 animate-fade-in-up"
+          class="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition border border-gray-200 hover:border-blue-500 animate-fade-in-up"
           :style="{ animationDelay: `${index * 80}ms` }"
         >
           <h3 class="text-xl font-bold text-gray-900 mb-2">{{ category.name }}</h3>
           <p class="text-gray-600 text-sm mb-4">{{ category.description || 'No description available.' }}</p>
           <div class="flex justify-between items-center">
-            <span class="text-sm text-blue-600 font-semibold">{{ category.products_count || 0 }} products</span>
-            <span class="text-blue-600 hover:text-blue-800 font-semibold">View Products &rarr;</span>
+            <span class="text-sm text-blue-500 font-semibold">{{ category.products_count || 0 }} products</span>
+            <span class="text-blue-500 hover:text-blue-600 font-semibold">View Products &rarr;</span>
           </div>
         </div>
       </div>

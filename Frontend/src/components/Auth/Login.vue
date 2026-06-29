@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { post } from '@/services/api'
 
 const router = useRouter()
 
@@ -41,19 +42,20 @@ const handleLogin = async () => {
   message.value = ''
 
   try {
-    const apiUrl = import.meta.env.VITE_API_BASE_URL
-    const response = await fetch(`${apiUrl}/api/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value,
-      }),
+    const data = await post('/api/login', {
+      email: email.value,
+      password: password.value,
     })
 
-    const data = await response.json()
-
     if (data.success) {
+      if (data.user?.is_blocked) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        loading.value = false
+        router.replace('/account-blocked')
+        return
+      }
+
       localStorage.setItem('token', data.token)
 
       localStorage.setItem(
@@ -62,7 +64,7 @@ const handleLogin = async () => {
           id: data.user?.id,
           name: data.user?.name,
           email: data.user?.email,
-          role: data.role, // Make sure role is included
+          role: data.role,
         }),
       )
 
@@ -150,7 +152,7 @@ const togglePasswordVisibility = () => {
               name="email"
               autocomplete="off"
               placeholder="narith@gmail.com"
-              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition"
             />
           </div>
         </div>
@@ -174,7 +176,7 @@ const togglePasswordVisibility = () => {
               name="password"
               autocomplete="new-password"
               placeholder="Enter your password"
-              class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition"
             />
             <button
               @click="togglePasswordVisibility"
@@ -208,11 +210,11 @@ const togglePasswordVisibility = () => {
           <label class="flex items-center space-x-2">
             <input
               type="checkbox"
-              class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+              class="rounded border-gray-300 text-blue-500 focus:ring-blue-400 cursor-pointer"
             />
             <span class="text-sm text-gray-600">Remember me</span>
           </label>
-          <a href="#" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+          <a href="#" class="text-sm text-blue-500 hover:text-blue-600 font-medium">
             Forgot password?
           </a>
         </div>
@@ -221,7 +223,7 @@ const togglePasswordVisibility = () => {
         <button
           @click="handleLogin"
           :disabled="loading"
-          class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg"
+          class="w-full bg-blue-500 text-white font-bold py-3 px-4 rounded-lg"
         >
           <span v-if="!loading">Sign In</span>
           <span v-else class="flex items-center justify-center">
@@ -303,7 +305,7 @@ const togglePasswordVisibility = () => {
         <!-- Sign Up Link -->
         <p class="text-center text-gray-600">
           Don't have an account?
-          <router-link to="/register" class="text-blue-600 hover:text-blue-700 font-semibold">
+          <router-link to="/register" class="text-blue-500 hover:text-blue-600 font-semibold">
             Sign up here
           </router-link>
         </p>

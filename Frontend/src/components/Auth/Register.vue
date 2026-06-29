@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { post } from '@/services/api'
 
 const router = useRouter()
 
@@ -75,19 +76,12 @@ const handleRegister = async () => {
   loading.value = true
 
   try {
-    const apiUrl = import.meta.env.VITE_API_BASE_URL
-    const response = await fetch(`${apiUrl}/api/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({
-        name: form.value.name,
-        email: form.value.email,
-        password: form.value.password,
-        password_confirmation: form.value.password_confirmation,
-      }),
-    })
-
-    const data = await response.json().catch(() => ({}))
+    const data = await post('/api/register', {
+      name: form.value.name,
+      email: form.value.email,
+      password: form.value.password,
+      password_confirmation: form.value.password_confirmation,
+    }).catch(() => ({}))
 
     if (response.ok && data.success) {
       localStorage.setItem('token', data.token)
@@ -172,7 +166,7 @@ const handleSocialLogin = (provider) => {
               placeholder="John Doe"
               :class="[
                 'w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition',
-                errors.name ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-500',
+                errors.name ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-400',
               ]"
             />
           </div>
@@ -192,7 +186,7 @@ const handleSocialLogin = (provider) => {
               placeholder="john@example.com"
               :class="[
                 'w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition',
-                errors.email ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-500',
+                errors.email ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-400',
               ]"
             />
           </div>
@@ -212,7 +206,7 @@ const handleSocialLogin = (provider) => {
               placeholder="At least 8 characters"
               :class="[
                 'w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition',
-                errors.password ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-500',
+                errors.password ? 'border-red-400 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-400',
               ]"
             />
             <button
@@ -252,7 +246,7 @@ const handleSocialLogin = (provider) => {
                 'w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition',
                 errors.password_confirmation
                   ? 'border-red-400 focus:ring-red-400'
-                  : 'border-gray-300 focus:ring-blue-500',
+                  : 'border-gray-300 focus:ring-blue-400',
               ]"
             />
             <button
@@ -272,7 +266,7 @@ const handleSocialLogin = (provider) => {
         <button
           @click="handleRegister"
           :disabled="loading"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
+          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
         >
           <span v-if="!loading">Create Account</span>
           <span v-else class="flex items-center justify-center">
@@ -347,7 +341,7 @@ const handleSocialLogin = (provider) => {
         <!-- Login Link -->
         <p class="text-center text-gray-600">
           Already have an account?
-          <router-link to="/login" class="text-blue-600 hover:text-blue-700 font-semibold">
+          <router-link to="/login" class="text-blue-500 hover:text-blue-600 font-semibold">
             Sign in here
           </router-link>
         </p>

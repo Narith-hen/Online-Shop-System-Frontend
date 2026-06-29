@@ -24,6 +24,8 @@ httpServer.on('request', (req, res) => {
     })
     return
   }
+  res.writeHead(404)
+  res.end('Not found')
 })
 
 const PORT = process.env.SOCKET_PORT || 3001

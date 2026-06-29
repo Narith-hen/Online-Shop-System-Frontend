@@ -47,6 +47,7 @@
             <ul class="space-y-2.5">
               <li><router-link to="/products" class="footer-link">Products</router-link></li>
               <li><router-link to="/categories" class="footer-link">Categories</router-link></li>
+              <li><router-link to="/wishlist" class="footer-link">Wishlist</router-link></li>
               <li><router-link to="/cart" class="footer-link">Cart</router-link></li>
               <li><router-link to="/orders" class="footer-link">My Orders</router-link></li>
             </ul>
