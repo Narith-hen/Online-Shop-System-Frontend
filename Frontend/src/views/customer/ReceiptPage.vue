@@ -66,7 +66,8 @@
         <!-- Items -->
         <div class="border-b border-gray-200 pb-6 mb-6">
           <h3 class="font-bold text-gray-900 mb-3 uppercase text-sm tracking-wide">Items</h3>
-          <table class="w-full text-sm">
+          <div class="overflow-x-auto -mx-2 px-2">
+          <table class="w-full text-sm min-w-[400px]">
             <thead>
               <tr class="text-gray-500 border-b border-gray-100">
                 <th class="text-left pb-2 font-semibold">Product</th>
@@ -84,6 +85,7 @@
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
 
         <!-- Summary -->

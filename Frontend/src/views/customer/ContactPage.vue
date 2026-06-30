@@ -1,13 +1,10 @@
 <template>
   <div>
-    <section class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-16 px-4 relative overflow-hidden">
-      <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-10 right-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
-        <div class="absolute bottom-10 left-10 w-48 h-48 bg-white rounded-full blur-3xl"></div>
-      </div>
+    <section class="relative text-white py-24 px-4" style="background-image: url('https://cdn.analyticsvidhya.com/wp-content/uploads/2024/03/customer-serive.webp'); background-size: cover; background-position: center;">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
       <div class="max-w-7xl mx-auto text-center relative animate-fade-in-down">
-        <h1 class="text-5xl font-bold mb-4">Contact Us</h1>
-        <p class="text-xl text-blue-100 max-w-2xl mx-auto">We'd love to hear from you. Get in touch with us today!</p>
+        <h1 class="text-5xl font-extrabold mb-3 drop-shadow-lg">Contact Us</h1>
+        <p class="text-xl text-white/80 font-light max-w-2xl mx-auto">We'd love to hear from you. Get in touch with us today!</p>
       </div>
     </section>
 

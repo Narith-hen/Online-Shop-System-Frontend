@@ -61,7 +61,7 @@ onMounted(() => {
 
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
-    <div class="bg-white rounded-xl shadow-2xl p-12 max-w-md w-full text-center animate-scale-in">
+    <div class="bg-white rounded-xl shadow-2xl p-6 sm:p-12 max-w-md w-full text-center animate-scale-in">
       <!-- Loading Spinner -->
       <div v-if="!error" class="mb-6">
         <svg

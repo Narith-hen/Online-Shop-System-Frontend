@@ -35,50 +35,7 @@
           </template>
 
           <template v-else-if="isCustomer">
-            <!-- Notifications -->
-            <div class="relative" ref="notifContainer">
-              <button @click.stop="notifOpen = !notifOpen"
-                class="relative w-10 h-10 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition"
-                aria-label="Notifications">
-                <i class="fas fa-bell text-lg"></i>
-                <span v-if="unreadCount > 0"
-                  class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-semibold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center animate-scale-in">
-                  {{ unreadCount > 99 ? '99+' : unreadCount }}
-                </span>
-              </button>
-              <transition name="dropdown">
-                <div v-if="notifOpen"
-                  class="absolute right-0 mt-2 w-80 bg-white rounded-xl border border-gray-100 shadow-lg py-2 max-h-96 overflow-y-auto origin-top-right">
-                  <div class="px-4 py-2 border-b border-gray-50 flex justify-between items-center">
-                    <p class="text-sm font-semibold text-gray-900">Notifications</p>
-                    <button v-if="unreadCount > 0" @click="markAllRead"
-                      class="text-xs text-blue-500 hover:text-blue-600 font-semibold">Mark all read</button>
-                  </div>
-                  <div v-if="notifications.length === 0" class="px-4 py-8 text-center text-sm text-gray-400">
-                    <i class="fas fa-bell text-2xl mb-2 block text-gray-300"></i>
-                    No notifications yet.
-                  </div>
-                  <div v-else>
-                    <div v-for="n in notifications" :key="n.id" @click="handleNotifClick(n)"
-                      class="px-4 py-3 hover:bg-gray-50 cursor-pointer transition" :class="!n.read ? 'bg-blue-100/50' : ''">
-                      <div class="flex gap-3">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm" :class="notifIconClass(n.type)">
-                          <i :class="notifIcon(n.type)"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                          <p class="text-sm font-semibold text-gray-900 truncate">{{ n.title }}</p>
-                          <p class="text-xs text-gray-500 line-clamp-2">{{ n.message }}</p>
-                          <p class="text-xs text-gray-400 mt-1">{{ timeAgo(n.created_at) }}</p>
-                        </div>
-                        <div v-if="!n.read" class="w-2 h-2 bg-blue-500 rounded-full shrink-0 mt-2"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </transition>
-            </div>
-
-            <!-- Cart -->
+            <!-- Cart (visible on all screens) -->
             <router-link to="/cart"
               class="relative w-10 h-10 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition"
               aria-label="Cart">
@@ -89,37 +46,81 @@
               </span>
             </router-link>
 
-            <!-- Profile -->
-            <div class="relative">
-              <button @click="profileOpen = !profileOpen"
-                class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition"
-                aria-label="Profile menu">
-                <span class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 text-white text-sm font-semibold flex items-center justify-center">
-                  {{ userInitial }}
-                </span>
-              </button>
-              <transition name="dropdown">
-                <div v-if="profileOpen"
-                  class="absolute right-0 mt-2 w-56 bg-white rounded-xl border border-gray-100 shadow-lg py-2 overflow-hidden origin-top-right">
-                  <div class="px-4 py-3 border-b border-gray-50">
-                    <p class="text-sm font-semibold text-gray-900 truncate">{{ userName }}</p>
-                    <p class="text-xs text-gray-500 truncate">{{ userEmail }}</p>
+            <!-- Notifications & Profile (desktop only) -->
+            <div class="hidden sm:flex items-center gap-1">
+              <div class="relative" ref="notifContainer">
+                <button @click.stop="notifOpen = !notifOpen"
+                  class="relative w-10 h-10 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition"
+                  aria-label="Notifications">
+                  <i class="fas fa-bell text-lg"></i>
+                  <span v-if="unreadCount > 0"
+                    class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-semibold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center animate-scale-in">
+                    {{ unreadCount > 99 ? '99+' : unreadCount }}
+                  </span>
+                </button>
+                <transition name="dropdown">
+                  <div v-if="notifOpen"
+                    class="absolute right-0 mt-2 w-80 bg-white rounded-xl border border-gray-100 shadow-lg py-2 max-h-96 overflow-y-auto origin-top-right">
+                    <div class="px-4 py-2 border-b border-gray-50 flex justify-between items-center">
+                      <p class="text-sm font-semibold text-gray-900">Notifications</p>
+                      <button v-if="unreadCount > 0" @click="markAllRead"
+                        class="text-xs text-blue-500 hover:text-blue-600 font-semibold">Mark all read</button>
+                    </div>
+                    <div v-if="notifications.length === 0" class="px-4 py-8 text-center text-sm text-gray-400">
+                      <i class="fas fa-bell text-2xl mb-2 block text-gray-300"></i>
+                      No notifications yet.
+                    </div>
+                    <div v-else>
+                      <div v-for="n in notifications" :key="n.id" @click="handleNotifClick(n)"
+                        class="px-4 py-3 hover:bg-gray-50 cursor-pointer transition" :class="!n.read ? 'bg-blue-100/50' : ''">
+                        <div class="flex gap-3">
+                          <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm" :class="notifIconClass(n.type)">
+                            <i :class="notifIcon(n.type)"></i>
+                          </div>
+                          <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-gray-900 truncate">{{ n.title }}</p>
+                            <p class="text-xs text-gray-500 line-clamp-2">{{ n.message }}</p>
+                            <p class="text-xs text-gray-400 mt-1">{{ timeAgo(n.created_at) }}</p>
+                          </div>
+                          <div v-if="!n.read" class="w-2 h-2 bg-blue-500 rounded-full shrink-0 mt-2"></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <router-link to="/profile" @click="profileOpen = false" class="dropdown-item">
-                    <i class="fas fa-user w-5 text-gray-400"></i> My Profile
-                  </router-link>
-                  <router-link to="/orders" @click="profileOpen = false" class="dropdown-item">
-                    <i class="fas fa-bag-shopping w-5 text-gray-400"></i> My Orders
-                  </router-link>
-                  <router-link to="/cart" @click="profileOpen = false" class="dropdown-item">
-                    <i class="fas fa-cart-shopping w-5 text-gray-400"></i> Shopping Cart
-                  </router-link>
-                  <div class="border-t border-gray-50 my-1"></div>
-                  <button @click="handleLogout" class="dropdown-item w-full text-left text-red-600">
-                    <i class="fas fa-right-from-bracket w-5"></i> Logout
-                  </button>
-                </div>
-              </transition>
+                </transition>
+              </div>
+
+              <div class="relative">
+                <button @click="profileOpen = !profileOpen"
+                  class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition"
+                  aria-label="Profile menu">
+                  <span class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 text-white text-sm font-semibold flex items-center justify-center">
+                    {{ userInitial }}
+                  </span>
+                </button>
+                <transition name="dropdown">
+                  <div v-if="profileOpen"
+                    class="absolute right-0 mt-2 w-56 bg-white rounded-xl border border-gray-100 shadow-lg py-2 overflow-hidden origin-top-right">
+                    <div class="px-4 py-3 border-b border-gray-50">
+                      <p class="text-sm font-semibold text-gray-900 truncate">{{ userName }}</p>
+                      <p class="text-xs text-gray-500 truncate">{{ userEmail }}</p>
+                    </div>
+                    <router-link to="/profile" @click="profileOpen = false" class="dropdown-item">
+                      <i class="fas fa-user w-5 text-gray-400"></i> My Profile
+                    </router-link>
+                    <router-link to="/orders" @click="profileOpen = false" class="dropdown-item">
+                      <i class="fas fa-bag-shopping w-5 text-gray-400"></i> My Orders
+                    </router-link>
+                    <router-link to="/cart" @click="profileOpen = false" class="dropdown-item">
+                      <i class="fas fa-cart-shopping w-5 text-gray-400"></i> Shopping Cart
+                    </router-link>
+                    <div class="border-t border-gray-50 my-1"></div>
+                    <button @click="handleLogout" class="dropdown-item w-full text-left text-red-600">
+                      <i class="fas fa-right-from-bracket w-5"></i> Logout
+                    </button>
+                  </div>
+                </transition>
+              </div>
             </div>
           </template>
 
@@ -134,59 +135,69 @@
     </div>
 
     <!-- Mobile drawer overlay -->
-    <transition name="drawer-overlay">
-      <div v-if="mobileOpen" class="fixed inset-0 bg-black/40 z-40 md:hidden" @click="mobileOpen = false"></div>
-    </transition>
+    <div v-if="mobileOpen" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[55] md:hidden" @click="mobileOpen = false"></div>
 
     <!-- Mobile drawer -->
-    <transition name="drawer">
-      <div v-if="mobileOpen"
-        class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-50 md:hidden flex flex-col overflow-y-auto">
-        <div class="flex items-center justify-between px-4 py-4 border-b border-gray-100">
+    <div v-if="mobileOpen" class="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-[60] md:hidden flex flex-col">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
           <div class="flex items-center gap-2.5">
-            <img src="/images/logo.png" alt="Online Shop" class="h-7 w-auto" />
-            <span class="font-semibold text-gray-900">Menu</span>
+            <img src="/images/logo.png" alt="Online Shop" class="h-8 w-auto" />
+            <span class="font-semibold text-gray-900 text-lg">Menu</span>
           </div>
           <button @click="mobileOpen = false" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100 transition">
             <i class="fas fa-xmark text-lg"></i>
           </button>
         </div>
-        <div class="flex-1 px-3 py-4 space-y-1">
-          <template v-if="isLoggedIn && isCustomer">
-            <router-link to="/home" @click="mobileOpen = false" class="mobile-link">
+
+        <template v-if="isLoggedIn && isCustomer">
+          <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/50 shrink-0">
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 text-white text-base font-semibold flex items-center justify-center shrink-0">{{ userInitial }}</span>
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-gray-900 truncate">{{ userName }}</p>
+                <p class="text-xs text-gray-500 truncate">{{ userEmail }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
+            <router-link to="/home" @click="mobileOpen = false" class="mobile-link" active-class="mobile-link-active">
               <i class="fas fa-home w-6 text-gray-400"></i> Home
             </router-link>
-            <router-link to="/products" @click="mobileOpen = false" class="mobile-link">
+            <router-link to="/products" @click="mobileOpen = false" class="mobile-link" active-class="mobile-link-active">
               <i class="fas fa-box w-6 text-gray-400"></i> Products
             </router-link>
-            <router-link to="/categories" @click="mobileOpen = false" class="mobile-link">
+            <router-link to="/categories" @click="mobileOpen = false" class="mobile-link" active-class="mobile-link-active">
               <i class="fas fa-tag w-6 text-gray-400"></i> Categories
             </router-link>
-            <router-link to="/wishlist" @click="mobileOpen = false" class="mobile-link">
+            <router-link to="/wishlist" @click="mobileOpen = false" class="mobile-link" active-class="mobile-link-active">
               <i class="fas fa-heart w-6 text-gray-400"></i> Wishlist
             </router-link>
-            <router-link to="/orders" @click="mobileOpen = false" class="mobile-link">
+            <router-link to="/orders" @click="mobileOpen = false" class="mobile-link" active-class="mobile-link-active">
               <i class="fas fa-receipt w-6 text-gray-400"></i> Orders
             </router-link>
-            <router-link to="/about" @click="mobileOpen = false" class="mobile-link">
+            <router-link to="/about" @click="mobileOpen = false" class="mobile-link" active-class="mobile-link-active">
               <i class="fas fa-info-circle w-6 text-gray-400"></i> About
             </router-link>
-            <router-link to="/contact" @click="mobileOpen = false" class="mobile-link">
+            <router-link to="/contact" @click="mobileOpen = false" class="mobile-link" active-class="mobile-link-active">
               <i class="fas fa-envelope w-6 text-gray-400"></i> Contact
             </router-link>
             <hr class="my-3 border-gray-100" />
-            <router-link to="/profile" @click="mobileOpen = false" class="mobile-link">
+            <router-link to="/profile" @click="mobileOpen = false" class="mobile-link" active-class="mobile-link-active">
               <i class="fas fa-user w-6 text-gray-400"></i> My Profile
             </router-link>
-            <router-link to="/cart" @click="mobileOpen = false" class="mobile-link">
+            <router-link to="/cart" @click="mobileOpen = false" class="mobile-link" active-class="mobile-link-active">
               <i class="fas fa-shopping-bag w-6 text-gray-400"></i> Cart
-              <span v-if="cartCount > 0" class="ml-auto bg-gray-900 text-white text-xs font-semibold px-2 py-0.5 rounded-full">{{ cartCount }}</span>
+              <span v-if="cartCount > 0" class="ml-auto bg-gray-900 text-white text-xs font-semibold px-2 py-0.5 rounded-full min-w-[22px] text-center">{{ cartCount }}</span>
             </router-link>
-            <button @click="handleLogout" class="mobile-link w-full text-left text-red-600">
+          </div>
+          <div class="border-t border-gray-100 p-3 shrink-0">
+            <button @click="handleLogout" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition text-sm font-medium">
               <i class="fas fa-right-from-bracket w-6"></i> Logout
             </button>
-          </template>
-          <template v-else-if="!isLoggedIn">
+          </div>
+        </template>
+        <template v-else-if="!isLoggedIn">
+          <div class="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
             <a href="#features" @click="mobileOpen = false" class="mobile-link">
               <i class="fas fa-star w-6 text-gray-400"></i> Features
             </a>
@@ -203,10 +214,9 @@
             <router-link to="/login" @click="mobileOpen = false" class="mobile-link text-blue-500 font-semibold">
               <i class="fas fa-arrow-right-to-bracket w-6"></i> Login
             </router-link>
-          </template>
-        </div>
-      </div>
-    </transition>
+          </div>
+        </template>
+    </div>
   </nav>
   <Toast ref="toastRef" />
 </template>
@@ -267,8 +277,10 @@ function initSocket() {
 }
 
 const closeDropdowns = (e) => {
-  if (profileOpen.value && !e.target.closest('.relative')) profileOpen.value = false
-  if (notifOpen.value && notifContainer.value && !notifContainer.value.contains(e.target)) notifOpen.value = false
+  var target = e.target
+  if (!target || !target.closest) return
+  if (profileOpen.value && !target.closest('.relative')) profileOpen.value = false
+  if (notifOpen.value && notifContainer.value && !notifContainer.value.contains(target)) notifOpen.value = false
 }
 
 const fetchCartCount = async () => {
@@ -364,6 +376,8 @@ const handleLogout = () => {
   transition: all 0.15s ease;
 }
 .mobile-link:hover { background: #f3f4f6; color: #111827; }
+.mobile-link-active { background: #eef2ff; color: #4f46e5; font-weight: 600; }
+.mobile-link-active i { color: #4f46e5; }
 
 .dropdown-item {
   display: flex;
@@ -380,8 +394,8 @@ const handleLogout = () => {
 .dropdown-enter-from, .dropdown-leave-to { opacity: 0; transform: translateY(-6px) scale(0.98); }
 
 .drawer-enter-active, .drawer-leave-active { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-.drawer-enter-from { transform: translateX(100%); }
-.drawer-leave-to { transform: translateX(100%); }
+.drawer-enter-from { transform: translateX(-100%); }
+.drawer-leave-to { transform: translateX(-100%); }
 .drawer-overlay-enter-active, .drawer-overlay-leave-active { transition: opacity 0.3s ease; }
 .drawer-overlay-enter-from, .drawer-overlay-leave-to { opacity: 0; }
 </style>

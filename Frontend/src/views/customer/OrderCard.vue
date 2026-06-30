@@ -1,9 +1,10 @@
 <template>
   <div>
-    <section class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-12 px-4">
-      <div class="max-w-7xl mx-auto animate-fade-in-down">
-        <h1 class="text-4xl font-bold mb-2">My Orders</h1>
-        <p class="text-lg text-blue-100">Track and manage all your orders in one place</p>
+    <section class="relative text-white py-24 px-4" style="background-image: url('https://www.inboundlogistics.com/wp-content/uploads/order-processing.jpg'); background-size: cover; background-position: center;">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+      <div class="max-w-7xl mx-auto animate-fade-in-down relative text-center">
+        <h1 class="text-5xl font-extrabold mb-3 drop-shadow-lg">My Orders</h1>
+        <p class="text-xl text-white/80 font-light max-w-xl mx-auto">Track and manage all your orders</p>
       </div>
     </section>
 
@@ -11,11 +12,11 @@
       <div class="mb-8 flex flex-col md:flex-row gap-4 animate-fade-in-up">
         <div class="relative flex-1">
           <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-          <input v-model="searchQuery" type="text" placeholder="Search by order ID or product name..."
-            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition" />
+          <input v-model="searchQuery" type="text" placeholder="Search order ID or product..."
+            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition" />
         </div>
         <select v-model="statusFilter"
-          class="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition appearance-none bg-white">
+          class="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition bg-white">
           <option value="">All Orders</option>
           <option value="pending">Pending</option>
           <option value="processing">Processing</option>
@@ -25,25 +26,13 @@
         </select>
       </div>
 
-      <div v-if="loading" class="space-y-6">
-        <div v-for="i in 3" :key="i" class="bg-white rounded-xl overflow-hidden shadow-sm animate-fade-in-up" :style="{ animationDelay: `${i * 80}ms` }">
-          <div class="p-6 border-l-4 border-gray-200">
-            <div class="flex justify-between items-start mb-4">
-              <div class="space-y-2">
-                <div class="skeleton skeleton-text-lg w-48"></div>
-                <div class="skeleton skeleton-text-sm w-32"></div>
-              </div>
-              <div class="skeleton skeleton-badge"></div>
-            </div>
-            <div class="space-y-3">
-              <div v-for="j in 2" :key="j" class="flex gap-4">
-                <div class="skeleton skeleton-image w-20 h-20 rounded-lg shrink-0"></div>
-                <div class="flex-1 space-y-2">
-                  <div class="skeleton skeleton-text w-3/4"></div>
-                  <div class="skeleton skeleton-text-sm w-1/3"></div>
-                </div>
-              </div>
-            </div>
+      <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div v-for="i in 6" :key="i" class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 animate-fade-in-up" :style="{ animationDelay: `${i * 60}ms` }">
+          <div class="p-5 space-y-3">
+            <div class="flex justify-between items-center"><div class="skeleton skeleton-text-lg w-28"></div><div class="skeleton skeleton-badge"></div></div>
+            <div class="skeleton skeleton-text-sm w-40"></div>
+            <div class="skeleton skeleton-image h-20 rounded-xl"></div>
+            <div class="flex justify-between"><div class="skeleton skeleton-text-sm w-16"></div><div class="skeleton skeleton-text-lg w-20"></div></div>
           </div>
         </div>
       </div>
@@ -53,195 +42,139 @@
           <i class="fas fa-receipt text-5xl text-blue-400"></i>
         </div>
         <h3 class="text-2xl font-bold text-gray-900 mb-2">No orders found</h3>
-        <p class="text-gray-500 mb-8 max-w-md mx-auto">
-          {{ searchQuery || statusFilter ? 'Try adjusting your search or filter to find what you\'re looking for.' : 'You haven\'t placed any orders yet. Start shopping to see your orders here.' }}
-        </p>
-        <router-link v-if="!searchQuery && !statusFilter" to="/products" class="btn-primary text-base py-3 px-8">
-          <i class="fas fa-arrow-left mr-1"></i> Browse Products
-        </router-link>
+        <p class="text-gray-500 mb-8">{{ searchQuery || statusFilter ? 'Try adjusting your search or filter.' : "You haven't placed any orders yet." }}</p>
+        <router-link v-if="!searchQuery && !statusFilter" to="/products" class="btn-primary text-base py-3 px-8"><i class="fas fa-arrow-left mr-1"></i> Browse Products</router-link>
       </div>
 
-      <div v-else class="space-y-6">
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <div v-for="(order, index) in filteredOrders" :key="order.id"
-          class="bg-white rounded-xl shadow-sm overflow-hidden animate-fade-in-up hover:shadow-md transition-shadow"
-          :style="{ animationDelay: `${index * 80}ms` }">
-          <div class="px-6 py-4 border-l-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-            :class="statusBorderClass(order.status)">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-                :class="statusIconBgClass(order.status)">
-                <i :class="statusIconClass(order.status)"></i>
-              </div>
-              <div>
-                <h3 class="text-lg font-bold text-gray-900">Order #{{ order.id }}</h3>
-                <p class="text-sm text-gray-500">Placed on {{ formatDate(order.created_at) }}</p>
-              </div>
+          @click="openReview(order)"
+          class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer animate-fade-in-up hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+          :style="{ animationDelay: `${index * 60}ms` }">
+          <div class="h-2" :class="statusBgClass(order.status)"></div>
+          <div class="p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-gray-900">Order #{{ order.id }}</h3>
+              <span class="status-badge text-[10px]" :class="statusBadgeClass(order.status)">{{ capitalize(order.status) }}</span>
             </div>
-            <span class="status-badge shrink-0" :class="statusBadgeClass(order.status)">
-              {{ capitalize(order.status) }}
-            </span>
-          </div>
+            <p class="text-xs text-gray-500 mb-4"><i class="far fa-calendar mr-1"></i>{{ formatDate(order.created_at) }}</p>
 
-          <div class="px-6 py-5">
-            <div class="space-y-3">
-              <div v-for="item in order.items" :key="item.id" class="flex gap-4 items-start py-2">
-                <div class="w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 overflow-hidden border border-gray-100">
-                  <img v-if="item.product?.image_url" :src="item.product.image_url" :alt="item.product.name"
-                    class="w-full h-full object-cover" />
-                  <i v-else class="fas fa-box text-gray-300 text-2xl"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="font-semibold text-gray-900 truncate">{{ item.product?.name || 'Product' }}</p>
-                  <p class="text-sm text-gray-500 mt-0.5">Qty: {{ item.quantity }} &times; ${{ Number(item.price).toFixed(2) }}</p>
-                  <span class="inline-block mt-1.5 status-badge text-[11px]" :class="itemStatusClass(item.status)">
-                    {{ capitalize(item.status || 'pending') }}
-                  </span>
-                </div>
-                <div class="text-right shrink-0">
-                  <p class="font-semibold text-gray-900">${{ (item.quantity * item.price).toFixed(2) }}</p>
-                  <div class="mt-2 flex flex-col gap-1">
-                    <button v-if="item.status === 'pending'"
-                      @click="confirmItemAction(order, item, 'cancel')"
-                      :disabled="processingItemId === item.id"
-                      class="text-xs text-red-600 hover:text-red-800 font-semibold disabled:opacity-50 flex items-center gap-1 justify-end">
-                      <i v-if="processingItemId === item.id" class="fas fa-spinner fa-spin"></i>
-                      <i v-else class="fas fa-xmark"></i> Cancel
-                    </button>
-                    <button v-if="item.status === 'delivered' || item.status === 'completed'"
-                      @click="confirmItemAction(order, item, 'return')"
-                      :disabled="processingItemId === item.id"
-                      class="text-xs text-orange-600 hover:text-orange-800 font-semibold disabled:opacity-50 flex items-center gap-1 justify-end">
-                      <i v-if="processingItemId === item.id" class="fas fa-spinner fa-spin"></i>
-                      <i v-else class="fas fa-rotate-left"></i> Return
-                    </button>
-                    <button v-if="item.status === 'cancelled' || item.status === 'returned'"
-                      @click="reorderItem(order, item)"
-                      :disabled="processingItemId === item.id"
-                      class="text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50 flex items-center gap-1 justify-end">
-                      <i v-if="processingItemId === item.id" class="fas fa-spinner fa-spin"></i>
-                      <i v-else class="fas fa-cart-plus"></i> Buy Again
-                    </button>
-                  </div>
-                </div>
+            <div class="flex items-center gap-2 mb-4">
+              <div v-for="item in order.items.slice(0, 3)" :key="item.id" class="w-10 h-10 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 -mr-2 last:mr-0 ring-2 ring-white">
+                <img v-if="item.product?.image_url" :src="item.product.image_url" class="w-full h-full object-cover" />
+                <div v-else class="w-full h-full flex items-center justify-center text-gray-300"><i class="fas fa-box text-xs"></i></div>
               </div>
+              <span v-if="order.items.length > 3" class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500 ring-2 ring-white">+{{ order.items.length - 3 }}</span>
             </div>
 
-            <hr class="my-4" />
-
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <p class="text-sm text-gray-500">Order Total</p>
-                <p class="text-2xl font-bold text-blue-500">${{ Number(order.total).toFixed(2) }}</p>
-              </div>
-              <div class="flex flex-wrap gap-2">
-                <router-link :to="`/orders/${order.id}/receipt`"
-                  class="btn-secondary text-sm py-2 px-4">
-                  <i class="fas fa-receipt mr-1"></i> Receipt
-                </router-link>
-                <button @click="toggleDetail(order)"
-                  class="btn-secondary text-sm py-2 px-4">
-                  <i :class="expandedOrderId === order.id ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="mr-1"></i>
-                  {{ expandedOrderId === order.id ? 'Less' : 'Details' }}
-                </button>
-                <button v-if="order.status === 'pending'"
-                  @click="confirmCancelOrder(order)"
-                  :disabled="cancellingId === order.id"
-                  class="btn-outline-danger text-sm py-2 px-4">
-                  <i v-if="cancellingId === order.id" class="fas fa-spinner fa-spin mr-1"></i>
-                  <i v-else class="fas fa-ban mr-1"></i>
-                  Cancel Order
-                </button>
-              </div>
-            </div>
-
-            <div v-if="expandedOrderId === order.id" class="mt-6 pt-6 border-t border-gray-100 animate-fade-in">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                <div class="space-y-2">
-                  <h4 class="font-bold text-gray-900 text-base mb-2"><i class="fas fa-info-circle text-blue-500 mr-1"></i> Order Information</h4>
-                  <p class="text-gray-600 flex justify-between"><span>Order ID</span><span class="font-medium text-gray-900">#{{ order.id }}</span></p>
-                  <p class="text-gray-600 flex justify-between"><span>Date</span><span class="font-medium text-gray-900">{{ formatDate(order.created_at) }}</span></p>
-                  <p class="text-gray-600 flex justify-between"><span>Status</span><span class="status-badge text-[11px]" :class="statusBadgeClass(order.status)">{{ capitalize(order.status) }}</span></p>
-                  <p v-if="order.payment_method" class="text-gray-600 flex justify-between">
-                    <span>Payment</span>
-                    <span class="font-medium text-gray-900">
-                      {{ order.payment_method === 'aba' ? 'ABA Bank' : (order.payment_method === 'acleda' ? 'ACLEDA Bank' : order.payment_method) }}
-                      <span class="ml-1 status-badge text-[11px]" :class="paymentStatusClass(order.payment_status)">{{ capitalize(order.payment_status || 'unpaid') }}</span>
-                    </span>
-                  </p>
-                </div>
-                <div class="space-y-2">
-                  <h4 class="font-bold text-gray-900 text-base mb-2"><i class="fas fa-user text-blue-500 mr-1"></i> Customer Information</h4>
-                  <p class="text-gray-600 flex justify-between"><span>Name</span><span class="font-medium text-gray-900">{{ order.customer_name || order.user?.name || 'N/A' }}</span></p>
-                  <p class="text-gray-600 flex justify-between"><span>Email</span><span class="font-medium text-gray-900">{{ order.customer_email || order.user?.email || 'N/A' }}</span></p>
-                  <p v-if="order.shipping_name" class="text-gray-600 flex justify-between"><span>Shipping</span><span class="font-medium text-gray-900 text-right max-w-[60%]">{{ order.shipping_name }}, {{ order.shipping_address }}, {{ order.shipping_city }}</span></p>
-                </div>
-                <div class="md:col-span-2">
-                  <h4 class="font-bold text-gray-900 text-base mb-3"><i class="fas fa-receipt text-blue-500 mr-1"></i> Order Summary</h4>
-                  <div class="bg-gray-50 rounded-lg p-4 space-y-2">
-                    <div v-for="item in order.items" :key="item.id" class="flex justify-between text-sm">
-                      <span class="text-gray-600">{{ item.product?.name || 'Product' }} <span class="text-gray-400">x{{ item.quantity }}</span></span>
-                      <span class="font-medium text-gray-900">${{ (item.quantity * item.price).toFixed(2) }}</span>
-                    </div>
-                    <hr class="my-2" />
-                    <div class="flex justify-between font-bold text-base">
-                      <span>Total</span>
-                      <span class="text-blue-500">${{ Number(order.total).toFixed(2) }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gray-500">{{ order.items.length }} {{ order.items.length === 1 ? 'item' : 'items' }}</span>
+              <span class="text-lg font-bold text-blue-500">${{ Number(order.total).toFixed(2) }}</span>
             </div>
           </div>
         </div>
+      </div>
 
-        <div v-if="pagination.last_page > 1" class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6">
-          <p class="text-sm text-gray-500">
-            Showing page {{ pagination.current_page }} of {{ pagination.last_page }} ({{ pagination.total }} orders)
-          </p>
-          <div class="flex items-center gap-2">
-            <button @click="goToPage(pagination.current_page - 1)"
-              :disabled="pagination.current_page <= 1"
-              class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed">
-              <i class="fas fa-chevron-left mr-1"></i> Previous
-            </button>
-            <template v-for="page in pageNumbers" :key="page">
-              <span v-if="page === '...'" class="px-2 text-gray-400">...</span>
-              <button v-else @click="goToPage(page)"
-                class="w-10 h-10 rounded-lg text-sm font-semibold transition"
-                :class="page === pagination.current_page ? 'bg-blue-500 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-100'">
-                {{ page }}
-              </button>
-            </template>
-            <button @click="goToPage(pagination.current_page + 1)"
-              :disabled="pagination.current_page >= pagination.last_page"
-              class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed">
-              Next <i class="fas fa-chevron-right ml-1"></i>
-            </button>
-          </div>
+      <div v-if="pagination.last_page > 1" class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 mt-8 border-t border-gray-100">
+        <p class="text-sm text-gray-500">Page {{ pagination.current_page }} of {{ pagination.last_page }} ({{ pagination.total }} orders)</p>
+        <div class="flex items-center gap-2">
+          <button @click="goToPage(pagination.current_page - 1)" :disabled="pagination.current_page <= 1" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-chevron-left mr-1"></i> Previous</button>
+          <template v-for="page in pageNumbers" :key="page">
+            <span v-if="page === '...'" class="px-2 text-gray-400">...</span>
+            <button v-else @click="goToPage(page)" class="w-10 h-10 rounded-lg text-sm font-semibold transition" :class="page === pagination.current_page ? 'bg-gray-900 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-100'">{{ page }}</button>
+          </template>
+          <button @click="goToPage(pagination.current_page + 1)" :disabled="pagination.current_page >= pagination.last_page" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed">Next <i class="fas fa-chevron-right ml-1"></i></button>
         </div>
       </div>
     </div>
 
     <Teleport to="body">
       <transition name="modal">
+        <div v-if="reviewOrder" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" @click.self="reviewOrder = null">
+          <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+          <div class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto animate-scale-in">
+            <div class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-base" :class="statusIconBgClass(reviewOrder.status)">
+                  <i :class="statusIconClass(reviewOrder.status)"></i>
+                </div>
+                <div>
+                  <h3 class="text-lg font-bold text-gray-900">Order #{{ reviewOrder.id }}</h3>
+                  <p class="text-xs text-gray-500">{{ formatDate(reviewOrder.created_at) }}</p>
+                </div>
+              </div>
+              <button @click="reviewOrder = null" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="p-6 space-y-5">
+              <div class="flex items-center justify-between">
+                <span class="status-badge" :class="statusBadgeClass(reviewOrder.status)">{{ capitalize(reviewOrder.status) }}</span>
+                <span class="text-2xl font-bold text-blue-500">${{ Number(reviewOrder.total).toFixed(2) }}</span>
+              </div>
+
+              <div class="divide-y divide-gray-100">
+                <div v-for="item in reviewOrder.items" :key="item.id" class="py-3 flex items-center gap-3">
+                  <div class="w-14 h-14 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 shrink-0">
+                    <img v-if="item.product?.image_url" :src="item.product.image_url" class="w-full h-full object-cover" />
+                    <div v-else class="w-full h-full flex items-center justify-center text-gray-300"><i class="fas fa-box"></i></div>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-900">{{ item.product?.name || 'Product' }}</p>
+                    <p class="text-xs text-gray-500">Qty: {{ item.quantity }} &times; ${{ Number(item.price).toFixed(2) }}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-sm font-bold text-gray-900">${{ (item.quantity * item.price).toFixed(2) }}</p>
+                    <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded" :class="itemStatusClass(item.status)">{{ capitalize(item.status || 'pending') }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 rounded-xl p-4 space-y-2">
+                <p class="font-semibold text-gray-900 text-sm">Order Summary</p>
+                <div class="flex justify-between text-sm"><span class="text-gray-500">Subtotal</span><span class="font-medium">${{ Number(reviewOrder.total).toFixed(2) }}</span></div>
+                <div class="flex justify-between text-sm"><span class="text-gray-500">Shipping</span><span class="text-emerald-600 font-medium">Free</span></div>
+                <hr class="border-gray-200" />
+                <div class="flex justify-between font-bold"><span class="text-gray-900">Total</span><span class="text-blue-500">${{ Number(reviewOrder.total).toFixed(2) }}</span></div>
+              </div>
+
+              <div class="bg-gray-50 rounded-xl p-4 space-y-1.5">
+                <p class="font-semibold text-gray-900 text-sm">Shipping To</p>
+                <p class="text-sm text-gray-600">{{ reviewOrder.customer_name || reviewOrder.user?.name || 'N/A' }}</p>
+                <p class="text-xs text-gray-500">{{ reviewOrder.customer_email || reviewOrder.user?.email || '' }}</p>
+                <p v-if="reviewOrder.shipping_name" class="text-xs text-gray-500">{{ reviewOrder.shipping_address }}, {{ reviewOrder.shipping_city }}</p>
+              </div>
+
+              <div v-if="reviewOrder.payment_method" class="bg-gray-50 rounded-xl p-4 space-y-1.5">
+                <p class="font-semibold text-gray-900 text-sm">Payment</p>
+                <p class="text-sm text-gray-600 capitalize">{{ reviewOrder.payment_method }}</p>
+                <span class="status-badge text-[10px]" :class="paymentStatusClass(reviewOrder.payment_status)">{{ capitalize(reviewOrder.payment_status || 'unpaid') }}</span>
+              </div>
+
+              <div class="flex flex-wrap gap-2 pt-2">
+                <router-link v-if="reviewOrder.status !== 'pending'" :to="`/orders/${reviewOrder.id}/receipt`" class="flex-1 px-4 py-2.5 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 transition text-sm text-center"><i class="fas fa-receipt mr-1"></i> View Receipt</router-link>
+                <button v-if="reviewOrder.status === 'pending'" @click="confirmCancelOrder(reviewOrder)" :disabled="cancellingId === reviewOrder.id" class="flex-1 px-4 py-2.5 bg-red-50 text-red-600 font-semibold rounded-xl hover:bg-red-100 transition text-sm"><i class="fas fa-ban mr-1"></i> Cancel Order</button>
+                <button @click="reviewOrder = null" class="flex-1 px-4 py-2.5 bg-gray-100 text-gray-600 font-semibold rounded-xl hover:bg-gray-200 transition text-sm">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </Teleport>
+
+    <Teleport to="body">
+      <transition name="modal">
         <div v-if="confirmDialog.visible" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" @click.self="closeConfirm">
           <div class="absolute inset-0 bg-black/40"></div>
           <div class="relative bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full text-center animate-scale-in">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
-              :class="confirmDialog.danger ? 'bg-red-100' : 'bg-blue-100'">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" :class="confirmDialog.danger ? 'bg-red-100' : 'bg-blue-100'">
               <i class="text-3xl" :class="confirmDialog.danger ? 'fas fa-exclamation-triangle text-red-500' : 'fas fa-question-circle text-blue-500'"></i>
             </div>
             <h3 class="text-lg font-bold text-gray-900 mb-2">{{ confirmDialog.title }}</h3>
             <p class="text-sm text-gray-600 mb-6">{{ confirmDialog.message }}</p>
             <div class="flex gap-3">
-              <button @click="closeConfirm" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
-                Cancel
-              </button>
-              <button @click="executeConfirm" :disabled="confirmDialog.processing"
-                class="flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold text-white transition disabled:opacity-50"
-                :class="confirmDialog.danger ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-500 hover:bg-blue-600'">
-                <i v-if="confirmDialog.processing" class="fas fa-spinner fa-spin mr-1"></i>
-                {{ confirmDialog.processing ? 'Processing...' : 'Confirm' }}
+              <button @click="closeConfirm" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
+              <button @click="executeConfirm" :disabled="confirmDialog.processing" class="flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold text-white transition disabled:opacity-50" :class="confirmDialog.danger ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-500 hover:bg-blue-600'">
+                <i v-if="confirmDialog.processing" class="fas fa-spinner fa-spin mr-1"></i>{{ confirmDialog.processing ? 'Processing...' : 'Confirm' }}
               </button>
             </div>
           </div>
@@ -262,47 +195,27 @@ export default {
   components: { Toast },
   data() {
     return {
-      orders: [],
-      loading: true,
-      searchQuery: '',
-      statusFilter: '',
-      cancellingId: null,
-      processingItemId: null,
-      expandedOrderId: null,
+      orders: [], loading: true, searchQuery: '', statusFilter: '',
+      cancellingId: null, processingItemId: null, reviewOrder: null,
       pagination: { current_page: 1, last_page: 1, per_page: 15, total: 0 },
-      confirmDialog: {
-        visible: false,
-        title: '',
-        message: '',
-        danger: false,
-        processing: false,
-        resolve: null,
-      },
+      confirmDialog: { visible: false, title: '', message: '', danger: false, processing: false, resolve: null },
     }
   },
   computed: {
     filteredOrders() {
-      return this.orders.filter(order => {
+      return this.orders.filter(o => {
         const q = this.searchQuery.toLowerCase().trim()
-        const matchesSearch = !q || String(order.id).includes(q) || (order.items || []).some(item =>
-          item.product?.name?.toLowerCase().includes(q)
-        )
-        const matchesStatus = !this.statusFilter || order.status === this.statusFilter
-        return matchesSearch && matchesStatus
+        return (!q || String(o.id).includes(q) || (o.items || []).some(i => i.product?.name?.toLowerCase().includes(q))) && (!this.statusFilter || o.status === this.statusFilter)
       })
     },
     pageNumbers() {
-      const c = this.pagination.current_page
-      const l = this.pagination.last_page
+      const c = this.pagination.current_page, l = this.pagination.last_page
       if (l <= 7) return Array.from({ length: l }, (_, i) => i + 1)
-      const pages = [1]
-      if (c > 3) pages.push('...')
-      const start = Math.max(2, c - 1)
-      const end = Math.min(l - 1, c + 1)
-      for (let i = start; i <= end; i++) pages.push(i)
-      if (c < l - 2) pages.push('...')
-      if (l > 1) pages.push(l)
-      return pages
+      const p = [1]; if (c > 3) p.push('...')
+      const s = Math.max(2, c - 1), e = Math.min(l - 1, c + 1)
+      for (let i = s; i <= e; i++) p.push(i)
+      if (c < l - 2) p.push('...'); if (l > 1) p.push(l)
+      return p
     },
   },
   async mounted() { await this.fetchOrders() },
@@ -311,113 +224,31 @@ export default {
       this.loading = true
       try {
         const data = await get(`/api/orders?page=${page}`)
-        if (data.data) {
-          this.orders = data.data
-          this.pagination = {
-            current_page: data.current_page || data.meta?.current_page || 1,
-            last_page: data.last_page || data.meta?.last_page || 1,
-            per_page: data.per_page || data.meta?.per_page || 15,
-            total: data.total || data.meta?.total || 0,
-          }
-        } else {
-          this.orders = data || []
-        }
+        if (data.data) { this.orders = data.data; this.pagination = { current_page: data.current_page || data.meta?.current_page || 1, last_page: data.last_page || data.meta?.last_page || 1, per_page: data.per_page || data.meta?.per_page || 15, total: data.total || data.meta?.total || 0 } }
+        else { this.orders = data || [] }
       } catch { this.orders = [] }
       finally { this.loading = false }
     },
-    async goToPage(page) {
-      if (page < 1 || page > this.pagination.last_page) return
-      await this.fetchOrders(page)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    },
-    toggleDetail(order) {
-      this.expandedOrderId = this.expandedOrderId === order.id ? null : order.id
-    },
-    showConfirm(title, message, danger = false) {
-      return new Promise(resolve => {
-        this.confirmDialog = { visible: true, title, message, danger, processing: false, resolve }
-      })
-    },
-    closeConfirm() {
-      this.confirmDialog.visible = false
-      if (this.confirmDialog.resolve) { this.confirmDialog.resolve(false); this.confirmDialog.resolve = null }
-    },
-    async executeConfirm() {
-      this.confirmDialog.processing = true
-      if (this.confirmDialog.resolve) { await this.confirmDialog.resolve(true); this.confirmDialog.resolve = null }
-      this.confirmDialog.visible = false
-      this.confirmDialog.processing = false
-    },
-    confirmItemAction(order, item, action) {
-      const labels = { cancel: { title: 'Cancel Item', message: `Cancel "${item.product?.name || 'this item'}" from Order #${order.id}?` }, return: { title: 'Return Item', message: `Request a return for "${item.product?.name || 'this item'}"?` } }
-      const l = labels[action]
-      this.showConfirm(l.title, l.message, action === 'cancel').then(async confirmed => {
-        if (!confirmed) return
-        this.processingItemId = item.id
-        try {
-          const endpoint = action === 'cancel' ? 'cancel' : 'return'
-          const data = await post(`/api/orders/${order.id}/items/${item.id}/${endpoint}`)
-          const idx = this.orders.findIndex(o => o.id === order.id)
-          if (idx !== -1) this.orders[idx] = data.order
-          const msg = action === 'cancel' ? 'Item cancelled successfully.' : 'Return requested successfully.'
-          this.$refs.toastRef?.show({ type: 'success', title: 'Success', message: msg })
-        } catch (err) {
-          this.$refs.toastRef?.show({ type: 'error', title: 'Error', message: err.data?.message || `Failed to ${action} item.` })
-        } finally { this.processingItemId = null }
-      })
-    },
-    async reorderItem(order, item) {
-      if (this.processingItemId) return
-      this.processingItemId = item.id
-      try {
-        const data = await post(`/api/orders/${order.id}/items/${item.id}/reorder`)
-        this.$refs.toastRef?.show({ type: 'success', title: 'Added to Cart', message: data.message || '"' + item.product?.name + '" has been added to your cart.' })
-      } catch (err) {
-        this.$refs.toastRef?.show({ type: 'error', title: 'Error', message: err.data?.message || 'Failed to add to cart.' })
-      } finally { this.processingItemId = null }
-    },
+    goToPage(p) { if (p < 1 || p > this.pagination.last_page) return; this.fetchOrders(p); window.scrollTo({ top: 0, behavior: 'smooth' }) },
+    openReview(order) { this.reviewOrder = order },
+    showConfirm(title, message, danger = false) { return new Promise(r => { this.confirmDialog = { visible: true, title, message, danger, processing: false, resolve: r } }) },
+    closeConfirm() { this.confirmDialog.visible = false; if (this.confirmDialog.resolve) { this.confirmDialog.resolve(false); this.confirmDialog.resolve = null } },
+    async executeConfirm() { this.confirmDialog.processing = true; if (this.confirmDialog.resolve) { await this.confirmDialog.resolve(true); this.confirmDialog.resolve = null } this.confirmDialog.visible = false; this.confirmDialog.processing = false },
     confirmCancelOrder(order) {
-      this.showConfirm('Cancel Order', `Are you sure you want to cancel Order #${order.id}? This action cannot be undone.`, true).then(async confirmed => {
-        if (!confirmed) return
-        this.cancellingId = order.id
-        try {
-          const data = await post(`/api/orders/${order.id}/cancel`)
-          const idx = this.orders.findIndex(o => o.id === order.id)
-          if (idx !== -1) this.orders[idx] = data.order
-          this.$refs.toastRef?.show({ type: 'success', title: 'Order Cancelled', message: 'Your order has been cancelled successfully.' })
-        } catch (err) {
-          this.$refs.toastRef?.show({ type: 'error', title: 'Error', message: err.data?.message || 'Failed to cancel order.' })
-        } finally { this.cancellingId = null }
+      this.showConfirm('Cancel Order', `Cancel Order #${order.id}? This cannot be undone.`, true).then(async c => {
+        if (!c) return; this.cancellingId = order.id
+        try { const d = await post(`/api/orders/${order.id}/cancel`); const i = this.orders.findIndex(o => o.id === order.id); if (i !== -1) this.orders[i] = d.order; this.reviewOrder = d.order; this.$refs.toastRef?.show({ type: 'success', title: 'Cancelled', message: 'Order cancelled.' }) } catch (e) { this.$refs.toastRef?.show({ type: 'error', title: 'Error', message: e.data?.message || 'Failed.' }) }
+        finally { this.cancellingId = null }
       })
     },
-    formatDate(date) {
-      return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-    },
-    capitalize(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : '' },
-    statusBorderClass(status) {
-      const map = { delivered: 'border-emerald-500', shipped: 'border-blue-500', processing: 'border-amber-500', pending: 'border-amber-400', cancelled: 'border-red-500' }
-      return map[status] || 'border-gray-300'
-    },
-    statusBadgeClass(status) {
-      const map = { pending: 'status-pending', processing: 'status-processing', shipped: 'status-shipped', delivered: 'status-delivered', completed: 'status-completed', cancelled: 'status-cancelled' }
-      return map[status] || 'bg-gray-100 text-gray-800 border-gray-200'
-    },
-    statusIconClass(status) {
-      const map = { pending: 'fas fa-clock', processing: 'fas fa-gear', shipped: 'fas fa-truck', delivered: 'fas fa-circle-check', completed: 'fas fa-circle-check', cancelled: 'fas fa-circle-xmark' }
-      return map[status] || 'fas fa-circle-info'
-    },
-    statusIconBgClass(status) {
-      const map = { pending: 'bg-amber-100 text-amber-600', processing: 'bg-blue-200 text-blue-500', shipped: 'bg-purple-100 text-purple-600', delivered: 'bg-emerald-100 text-emerald-600', completed: 'bg-emerald-100 text-emerald-600', cancelled: 'bg-red-100 text-red-600' }
-      return map[status] || 'bg-gray-100 text-gray-600'
-    },
-    paymentStatusClass(status) {
-      const map = { unpaid: 'status-unpaid', pending_verification: 'status-pending_verification', verified: 'status-verified', failed: 'status-failed' }
-      return map[status] || 'bg-gray-100 text-gray-800'
-    },
-    itemStatusClass(status) {
-      const map = { pending: 'status-pending', processing: 'status-processing', shipped: 'status-shipped', delivered: 'status-delivered', completed: 'status-completed', cancelled: 'status-cancelled', returned: 'status-returned' }
-      return map[status] || 'bg-gray-100 text-gray-800'
-    },
+    formatDate(d) { return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) },
+    capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : '' },
+    statusBgClass(s) { return { pending: 'bg-amber-400', processing: 'bg-blue-400', shipped: 'bg-purple-400', delivered: 'bg-emerald-400', cancelled: 'bg-red-400' }[s] || 'bg-gray-300' },
+    statusBadgeClass(s) { return { pending: 'status-pending', processing: 'status-processing', shipped: 'status-shipped', delivered: 'status-delivered', completed: 'status-completed', cancelled: 'status-cancelled' }[s] || 'bg-gray-100 text-gray-800' },
+    statusIconClass(s) { return { pending: 'fas fa-clock', processing: 'fas fa-gear', shipped: 'fas fa-truck', delivered: 'fas fa-circle-check', completed: 'fas fa-circle-check', cancelled: 'fas fa-circle-xmark' }[s] || 'fas fa-circle-info' },
+    statusIconBgClass(s) { return { pending: 'bg-amber-100 text-amber-600', processing: 'bg-blue-200 text-blue-500', shipped: 'bg-purple-100 text-purple-600', delivered: 'bg-emerald-100 text-emerald-600', completed: 'bg-emerald-100 text-emerald-600', cancelled: 'bg-red-100 text-red-600' }[s] || 'bg-gray-100 text-gray-600' },
+    paymentStatusClass(s) { return { unpaid: 'status-unpaid', pending_verification: 'status-pending_verification', verified: 'status-verified', failed: 'status-failed' }[s] || 'bg-gray-100 text-gray-800' },
+    itemStatusClass(s) { return { pending: 'status-pending', processing: 'status-processing', shipped: 'status-shipped', delivered: 'status-delivered', completed: 'status-completed', cancelled: 'status-cancelled', returned: 'status-returned' }[s] || 'bg-gray-100 text-gray-800' },
   },
 }
 </script>

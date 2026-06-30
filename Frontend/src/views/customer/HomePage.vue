@@ -1,9 +1,7 @@
 <template>
   <div>
-    <section class="relative bg-gradient-to-br from-blue-700 via-blue-500 to-indigo-700 overflow-hidden">
-      <div class="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-      <div class="absolute -bottom-32 -left-20 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl"></div>
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-400/10 rounded-full blur-3xl"></div>
+    <section class="relative text-white overflow-hidden" style="background-image: url('https://intelcorp.scene7.com/is/image/intelcorp/laptop-marquee-16x9:1920-1080?wid=1072&hei=603&fmt=webp-alpha'); background-size: cover; background-position: center; font-family: Tahoma, Helvetica, Arial, sans-serif;">
+      <div class="absolute inset-0 bg-black/50 backdrop-blur-[3px]"></div>
 
       <div class="relative max-w-7xl mx-auto px-4 py-20 lg:py-28">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -42,11 +40,17 @@
             </div>
           </div>
 
-          <div class="relative hidden lg:block animate-fade-in-right">
-            <div class="absolute inset-0 bg-white/10 rounded-3xl rotate-6"></div>
-            <img :src="welcomeImg" alt="Welcome to Online Shop"
-              class="relative rounded-3xl shadow-2xl ring-1 ring-white/20 w-full h-[460px] object-cover" />
-            <div class="absolute -bottom-5 -left-5 bg-white rounded-xl shadow-xl px-5 py-3 flex items-center gap-3 animate-float">
+          <div class="relative hidden lg:flex items-center justify-center animate-fade-in-right">
+            <div class="w-full max-w-md aspect-square rounded-3xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center p-12">
+              <div class="text-center">
+                <div class="text-8xl mb-6">🛍️</div>
+                <p class="text-xl text-white/80 font-light">Shop the best deals</p>
+                <div class="mt-6 flex items-center justify-center gap-2 text-yellow-300 text-2xl">
+                  <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                </div>
+              </div>
+            </div>
+            <div class="absolute -bottom-3 -left-3 bg-white rounded-xl shadow-xl px-5 py-3 flex items-center gap-3 animate-float">
               <span class="flex items-center justify-center w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full">
                 <i class="fas fa-truck"></i>
               </span>
@@ -176,7 +180,7 @@
             <div class="flex justify-between items-center mt-3">
               <span class="text-lg font-bold text-blue-500">${{ Number(product.price).toFixed(2) }}</span>
               <button @click.stop="addToCart(product)" :disabled="product.stock === 0 || addingId === product.id"
-                class="bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 active:scale-95 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1">
+                class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 active:scale-95 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5">
                 <i v-if="addingId === product.id" class="fas fa-spinner fa-spin"></i>
                 <i v-else class="fas fa-cart-plus text-xs"></i>
                 {{ addingId === product.id ? '' : 'Add' }}
@@ -200,6 +204,32 @@
       </div>
     </section>
 
+    <section class="bg-white py-16 border-t border-gray-100">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12 animate-fade-in-down">
+          <span class="text-sm font-semibold text-blue-500 uppercase tracking-wider">Testimonials</span>
+          <h2 class="text-3xl font-bold text-gray-900 mt-2">What Our Customers Say</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div v-for="(t, i) in testimonials" :key="i"
+            class="bg-gray-50 rounded-2xl p-6 border border-gray-100 animate-fade-in-up hover:shadow-md transition-shadow"
+            :style="{ animationDelay: `${i * 100}ms` }">
+            <div class="flex items-center gap-1 mb-3">
+              <span v-for="s in 5" :key="s" class="text-yellow-400 text-xs"><i class="fas fa-star"></i></span>
+            </div>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">"{{ t.text }}"</p>
+            <div class="flex items-center gap-3">
+              <img :src="t.image" :alt="t.name" class="w-10 h-10 rounded-full object-cover border-2 border-gray-200" />
+              <div>
+                <p class="text-sm font-semibold text-gray-900">{{ t.name }}</p>
+                <p class="text-xs text-gray-400">{{ t.role }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="bg-gradient-to-r from-blue-500 to-indigo-600 py-16">
       <div class="max-w-7xl mx-auto px-4 text-center animate-fade-in-up">
         <h2 class="text-3xl font-bold text-white mb-4">Ready to Start Shopping?</h2>
@@ -216,7 +246,6 @@
 </template>
 
 <script>
-import welcomeImg from '@/assets/images/welcome.png'
 import SuccessModal from '@/components/SuccessModal.vue'
 import Toast from '@/components/Toast.vue'
 import { get, post } from '@/services/api'
@@ -226,7 +255,6 @@ export default {
   name: 'CustomerHome',
   data() {
     return {
-      welcomeImg,
       featuredProducts: [],
       loadingProducts: false,
       categories: [],
@@ -241,6 +269,11 @@ export default {
       ],
       categoryColors: ['bg-blue-100', 'bg-emerald-100', 'bg-amber-100', 'bg-purple-100', 'bg-rose-100', 'bg-cyan-100'],
       categoryIcons: ['fas fa-laptop', 'fas fa-tshirt', 'fas fa-couch', 'fas fa-book', 'fas fa-gem', 'fas fa-futbol'],
+      testimonials: [
+        { text: 'Absolutely love the quality and fast shipping. I received my order within 2 days and the product exceeded my expectations.', name: 'Sarah J.', role: 'Verified Buyer', image: 'https://i.pinimg.com/736x/36/3e/48/363e4817c5358a3423f961b388941625.jpg' },
+        { text: 'Best online shopping experience I have had. The customer service team was incredibly helpful when I had a question about my order.', name: 'Mike C.', role: 'Verified Buyer', image: 'https://i.pinimg.com/736x/52/62/6f/52626f71391e476ab27e76422c2b5929.jpg' },
+        { text: 'Great prices and excellent product selection. The easy return policy gave me confidence to try new products without worry.', name: 'Emma D.', role: 'Verified Buyer', image: 'https://i.pinimg.com/1200x/61/65/e3/6165e3b3b4d7d22d29de95eab429930d.jpg' },
+      ],
     }
   },
   async mounted() {

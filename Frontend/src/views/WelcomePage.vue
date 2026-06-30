@@ -4,14 +4,7 @@
 
     <!-- Hero Section -->
     <section
-      class="relative text-white py-32 px-4"
-      :style="{
-        backgroundImage: `url(${welcomeImg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        minHeight: '50vh',
-      }"
+      class="relative text-white py-32 px-4 bg-gradient-to-br from-blue-500 to-purple-600"
     >
       <!-- Dark overlay -->
       <div class="absolute inset-0 bg-black/40"></div>
@@ -352,16 +345,10 @@
 </template>
 
 <script>
-import welcomeImg from '@/assets/images/welcome.png'
 import Navbar from '@/components/Navbar.vue'
 
 export default {
   name: 'WelcomePage',
   components: { Navbar },
-  data() {
-    return {
-      welcomeImg,
-    }
-  },
 }
 </script>

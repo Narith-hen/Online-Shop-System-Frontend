@@ -117,7 +117,7 @@ const togglePasswordVisibility = () => {
         <div class="inline-block bg-white rounded-full">
           <img src="/images/logo.png" alt="" class="w-32" />
         </div>
-        <h1 class="text-4xl font-bold text-black-600 mb-2">Online Shop System</h1>
+        <h1 class="text-2xl sm:text-4xl font-bold text-black-600 mb-2">Online Shop System</h1>
         <p class="text-gray-500">Sign in to your account</p>
       </div>
 

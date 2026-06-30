@@ -1,13 +1,10 @@
 <template>
   <div>
-    <section class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-16 px-4 relative overflow-hidden">
-      <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
-        <div class="absolute bottom-10 right-10 w-48 h-48 bg-white rounded-full blur-3xl"></div>
-      </div>
+    <section class="relative text-white py-24 px-4" style="background-image: url('https://i.dell.com/is/image/DellContent/content/dam/documents-and-videos/dv2/pan-dell/en/product-launch/laptops-and-2n1s/dell-laptops/d14260/site-banners/14-intel/cs2404g0058-gl-cs-co-fy26q2-site-banner-dell-14-intel-d14260-plastic-laptop-1208x906.jpg?wid=480&hei=360&t=1'); background-size: cover; background-position: center;">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
       <div class="max-w-7xl mx-auto text-center relative animate-fade-in-down">
-        <h1 class="text-5xl font-bold mb-4">About Online Shop</h1>
-        <p class="text-xl text-blue-200 max-w-2xl mx-auto">Your trusted partner in online shopping — delivering quality products since 2020</p>
+        <h1 class="text-5xl font-extrabold mb-3 drop-shadow-lg">About Online Shop</h1>
+        <p class="text-xl text-white/80 font-light max-w-2xl mx-auto">Your trusted partner in online shopping — delivering quality products since 2020</p>
       </div>
     </section>
 
@@ -140,15 +137,13 @@
           <span class="text-sm font-semibold text-blue-500 uppercase tracking-wider">Our Team</span>
           <h2 class="text-4xl font-bold text-gray-900 mt-2">Meet The People Behind The Store</h2>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center max-w-4xl mx-auto">
 
           <div v-for="(member, i) in team" :key="i"
             class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fade-in-up text-center"
             :style="{ animationDelay: `${i * 80}ms` }">
-            <div class="bg-gradient-to-br p-8 flex items-center justify-center" :class="member.gradient">
-              <div class="w-24 h-24 rounded-full bg-white/30 backdrop-blur flex items-center justify-center">
-                <span class="text-4xl font-bold text-white">{{ member.initials }}</span>
-              </div>
+            <div class="bg-gradient-to-br from-gray-100 to-gray-200 p-6 flex items-center justify-center">
+              <img :src="member.image" :alt="member.name" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md" />
             </div>
             <div class="p-6">
               <h3 class="text-lg font-bold text-gray-900">{{ member.name }}</h3>
@@ -165,6 +160,9 @@
 </template>
 
 <script>
+import narithImg from '@/assets/images/NarithHen.png'
+import sothinImg from '@/assets/images/SothinKe.jpg'
+
 export default {
   name: 'AboutPage',
   data() {
@@ -178,10 +176,9 @@ export default {
         { icon: 'fas fa-headset text-cyan-600', bg: 'bg-cyan-100', title: '24/7 Support', desc: 'Dedicated customer service team always ready to help with any questions or concerns.' },
       ],
       team: [
-        { initials: 'JS', gradient: 'from-blue-500 to-blue-600', name: 'John Smith', role: 'CEO & Founder', bio: 'Visionary leader with 15+ years of experience in e-commerce and retail.' },
-        { initials: 'SJ', gradient: 'from-purple-500 to-purple-700', name: 'Sarah Johnson', role: 'Head of Operations', bio: 'Ensures smooth operations and exceptional customer satisfaction every day.' },
-        { initials: 'MC', gradient: 'from-emerald-500 to-emerald-700', name: 'Mike Chen', role: 'Tech Director', bio: 'Drives innovation and platform development with a passion for great UX.' },
-        { initials: 'ED', gradient: 'from-pink-500 to-pink-700', name: 'Emma Davis', role: 'Customer Success', bio: 'Dedicated to customer happiness and building lasting relationships.' },
+        { name: 'Narith HEN', role: 'CEO & Founder', bio: 'Visionary leader driving the company forward with a passion for e-commerce and innovation.', image: narithImg },
+        { name: 'Sothin Ke', role: 'Head of Operations', bio: 'Ensures smooth daily operations and exceptional customer satisfaction across all channels.', image: sothinImg },
+        { name: 'ReakSmey San', role: 'Tech Director', bio: 'Drives innovation and platform development with a passion for great user experiences.', image: 'https://media.licdn.com/dms/image/v2/D5603AQFRUl8al8Mj_Q/profile-displayphoto-crop_800_800/B56Z5CxkdLGkAI-/0/1779236752915?e=1784160000&v=beta&t=OKQTlZblnepM2udvmR6KR-nTVumLb1j5MHwXY9yZSHM' },
       ],
     }
   },

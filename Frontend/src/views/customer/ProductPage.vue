@@ -1,132 +1,135 @@
 <template>
   <div>
-  <div class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-4xl font-bold mb-8 animate-fade-in-down">Our Products</h1>
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+      <router-link to="/" class="hover:text-blue-500">Home</router-link>
+      <i class="fas fa-chevron-right text-[10px]"></i>
+      <span class="text-gray-900 font-medium">Products</span>
+    </nav>
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-      <!-- Sidebar Filters -->
       <div class="lg:col-span-1 animate-fade-in-left">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-24">
-          <div class="mb-6">
-            <h3 class="font-bold text-sm text-gray-900 mb-3 uppercase tracking-wide">Search</h3>
+        <div class="bg-white rounded-xl border border-gray-200 p-5 sticky top-24">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-gray-900 text-sm">Filters</h3>
+            <button v-if="searchQuery || selectedCategory || inStockOnly" @click="resetFilters" class="text-xs text-blue-500 hover:text-blue-600 font-medium">Clear all</button>
+          </div>
+
+          <div class="mb-5">
             <div class="relative">
               <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-              <input v-model="searchQuery" type="text" placeholder="Search products..."
+              <input v-model="searchQuery" type="text" placeholder="Search..."
                 class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 text-sm" />
             </div>
           </div>
 
-          <div class="mb-6">
-            <h3 class="font-bold text-sm text-gray-900 mb-3 uppercase tracking-wide">Categories</h3>
-            <div class="space-y-1.5">
+          <div class="mb-5">
+            <h4 class="font-semibold text-gray-900 text-xs uppercase tracking-wide mb-3">Category</h4>
+            <div class="space-y-1">
               <button @click="selectedCategory = null"
-                class="w-full text-left px-3 py-2 rounded-lg text-sm transition"
-                :class="!selectedCategory ? 'bg-blue-200 text-blue-500 font-semibold' : 'text-gray-600 hover:bg-gray-50'">
-                <i class="fas fa-th-list mr-2 text-xs"></i>All Categories
+                class="w-full text-left px-3 py-2 rounded-lg text-sm transition flex items-center gap-2"
+                :class="!selectedCategory ? 'bg-gray-900 text-white font-medium' : 'text-gray-600 hover:bg-gray-100'">
+                <i class="fas fa-th-list text-xs"></i> All Categories
               </button>
               <button v-for="cat in categories" :key="cat.id" @click="selectedCategory = cat.id"
-                class="w-full text-left px-3 py-2 rounded-lg text-sm transition"
-                :class="selectedCategory === cat.id ? 'bg-blue-200 text-blue-500 font-semibold' : 'text-gray-600 hover:bg-gray-50'">
-                {{ cat.name }}
-                <span class="text-xs text-gray-400 ml-1">({{ cat.products_count || 0 }})</span>
+                class="w-full text-left px-3 py-2 rounded-lg text-sm transition flex items-center justify-between gap-2"
+                :class="selectedCategory === cat.id ? 'bg-gray-900 text-white font-medium' : 'text-gray-600 hover:bg-gray-100'">
+                <span>{{ cat.name }}</span>
+                <span class="text-xs opacity-60">({{ cat.products_count || 0 }})</span>
               </button>
             </div>
           </div>
 
           <div>
-            <h3 class="font-bold text-sm text-gray-900 mb-3 uppercase tracking-wide">Availability</h3>
-            <label class="flex items-center gap-2.5 cursor-pointer px-1 py-1.5">
+            <h4 class="font-semibold text-gray-900 text-xs uppercase tracking-wide mb-3">Availability</h4>
+            <label class="flex items-center gap-2.5 cursor-pointer py-1">
               <input type="checkbox" v-model="inStockOnly"
-                class="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-400" />
+                class="w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900 accent-gray-900" />
               <span class="text-sm text-gray-700">In Stock Only</span>
             </label>
           </div>
-
-          <button @click="resetFilters" v-if="searchQuery || selectedCategory || inStockOnly"
-            class="mt-5 w-full py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition border border-red-200">
-            <i class="fas fa-times mr-1"></i> Clear Filters
-          </button>
         </div>
       </div>
 
-      <!-- Products Grid -->
       <div class="lg:col-span-3 animate-fade-in-right">
-        <!-- Skeleton -->
-        <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="i in 6" :key="i" class="bg-white rounded-xl overflow-hidden border border-gray-100">
+        <div class="flex items-center justify-between mb-5">
+          <p class="text-sm text-gray-500">
+            {{ loading ? 'Loading...' : (totalProducts + ' result' + (totalProducts !== 1 ? 's' : '')) }}
+          </p>
+        </div>
+
+        <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div v-for="i in 6" :key="i" class="bg-white rounded-xl overflow-hidden border border-gray-200">
             <div class="skeleton skeleton-image h-48 !rounded-none"></div>
             <div class="p-4 space-y-3">
               <div class="skeleton skeleton-text-sm"></div>
               <div class="skeleton skeleton-text"></div>
-              <div class="skeleton skeleton-text-sm w-3/4"></div>
+              <div class="flex items-center gap-1"><span v-for="s in 5" :key="s" class="skeleton w-3 h-3 rounded-full inline-block"></span></div>
               <div class="flex justify-between items-center pt-2">
-                <div class="skeleton skeleton-text-lg w-24"></div>
-                <div class="skeleton skeleton-button"></div>
+                <div class="skeleton skeleton-text-lg w-20"></div>
+                <div class="skeleton skeleton-button w-24 h-8"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Empty -->
-        <div v-else-if="products.length === 0" class="text-center py-20">
-          <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-100 rounded-full mb-6">
-            <i class="fas fa-box-open text-4xl text-gray-400"></i>
+        <div v-else-if="products.length === 0" class="text-center py-20 border border-dashed border-gray-300 rounded-xl">
+          <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
+            <i class="fas fa-box-open text-3xl text-gray-400"></i>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">No products found</h3>
-          <p class="text-gray-500 mb-6">Try adjusting your search or filters.</p>
-          <button @click="resetFilters" class="btn-primary">Reset Filters</button>
+          <h3 class="text-lg font-bold text-gray-900 mb-1">No products found</h3>
+          <p class="text-sm text-gray-500 mb-5">Try a different search or category.</p>
+          <button @click="resetFilters" class="px-5 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition">Clear Filters</button>
         </div>
 
         <div v-else>
-          <div class="mb-5 flex justify-between items-center">
-            <p class="text-sm text-gray-500">Showing <span class="font-semibold text-gray-900">{{ products.length }}</span> of <span class="font-semibold text-gray-900">{{ totalProducts }}</span> products</p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             <div v-for="(product, index) in products" :key="product.id"
-              class="product-card animate-fade-in-up" :style="{ animationDelay: `${index * 60}ms` }">
-              <router-link :to="`/products/${product.id}`" class="block overflow-hidden">
-                <img :src="product.image_url || 'https://via.placeholder.com/300x200?text=No+Image'" :alt="product.name"
-                  class="product-img w-full h-48 object-cover" />
+              class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 animate-fade-in-up"
+              :style="{ animationDelay: `${index * 50}ms` }">
+              <router-link :to="`/products/${product.id}`" class="block bg-white p-4 flex items-center justify-center h-48 border-b border-gray-100">
+                <img :src="product.image_url || 'https://placehold.co/200x180/e2e8f0/64748b?text=No+Image'" :alt="product.name"
+                  class="w-full h-full object-contain" />
               </router-link>
               <div class="p-4">
-                <div class="flex items-start justify-between mb-1.5">
-                  <p v-if="product.category" class="text-xs text-blue-500 font-semibold uppercase tracking-wide">{{ product.category.name }}</p>
-                  <span v-if="product.stock <= 5 && product.stock > 0" class="text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Low stock</span>
-                  <span v-if="product.stock === 0" class="text-[10px] font-semibold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Out of stock</span>
-                </div>
-                <router-link :to="`/products/${product.id}`" class="font-bold text-base mb-1.5 block hover:text-blue-500 transition leading-snug">
+                <p v-if="product.category" class="text-[11px] text-gray-400 mb-1">{{ product.category.name }}</p>
+                <router-link :to="`/products/${product.id}`" class="text-sm font-medium text-gray-900 hover:text-blue-500 leading-snug block mb-2 line-clamp-2">
                   {{ product.name }}
                 </router-link>
-                <p class="text-gray-500 text-xs mb-3 line-clamp-2">{{ product.description || 'No description.' }}</p>
-                <div class="flex justify-between items-center">
-                  <span class="text-xl font-bold text-blue-500">${{ product.price?.toFixed(2) }}</span>
+                <div class="flex items-center gap-1 mb-2">
+                  <span v-for="s in 5" :key="s" class="text-[10px]" :class="s <= 4 ? 'text-yellow-400' : 'text-gray-200'"><i class="fas fa-star"></i></span>
+                </div>
+                <div v-if="product.stock <= 3 && product.stock > 0" class="text-[10px] text-amber-600 font-medium mb-2">Only {{ product.stock }} left</div>
+                <div v-if="product.stock === 0" class="text-[10px] text-red-600 font-medium mb-2">Out of stock</div>
+                <div class="flex items-center justify-between">
+                  <span class="text-lg font-bold text-gray-900">${{ Number(product.price).toFixed(2) }}</span>
                   <button @click.stop="addToCart(product)" :disabled="product.stock === 0 || addingId === product.id"
-                    class="bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
-                    <i v-if="addingId === product.id" class="fas fa-spinner fa-spin mr-1"></i>
-                    {{ addingId === product.id ? 'Adding...' : 'Add to Cart' }}
+                    class="px-4 py-2 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-800 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5">
+                    <i v-if="addingId === product.id" class="fas fa-spinner fa-spin"></i>
+                    <i v-else class="fas fa-cart-plus"></i>
+                    {{ addingId === product.id ? '' : 'Add' }}
                   </button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Pagination -->
-          <div v-if="lastPage > 1" class="flex items-center justify-center gap-3 mt-10">
+          <div v-if="lastPage > 1" class="flex items-center justify-center gap-2 mt-10">
             <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1"
-              class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed transition">
-              <i class="fas fa-chevron-left mr-1"></i> Previous
+              class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed">
+              <i class="fas fa-chevron-left"></i>
             </button>
-            <div class="flex items-center gap-1.5">
-              <span v-for="p in visiblePages" :key="p" @click="changePage(p)"
-                class="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-medium cursor-pointer transition"
-                :class="p === currentPage ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'">
+            <template v-for="p in visiblePages" :key="p">
+              <span v-if="p === '...'" class="px-2 text-gray-400 text-sm">...</span>
+              <button v-else @click="changePage(p)"
+                class="w-9 h-9 rounded-lg text-sm font-medium transition"
+                :class="p === currentPage ? 'bg-gray-900 text-white' : 'border border-gray-300 text-gray-600 hover:bg-gray-100'">
                 {{ p }}
-              </span>
-            </div>
+              </button>
+            </template>
             <button @click="changePage(currentPage + 1)" :disabled="currentPage >= lastPage"
-              class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed transition">
-              Next <i class="fas fa-chevron-right ml-1"></i>
+              class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed">
+              <i class="fas fa-chevron-right"></i>
             </button>
           </div>
         </div>
@@ -148,24 +151,19 @@ export default {
   components: { SuccessModal, Toast },
   data() {
     return {
-      products: [],
-      categories: [],
-      loading: true,
-      searchQuery: '',
-      selectedCategory: null,
-      inStockOnly: false,
-      addingId: null,
-      currentPage: 1,
-      lastPage: 1,
-      totalProducts: 0,
+      products: [], categories: [], loading: true,
+      searchQuery: '', selectedCategory: null, inStockOnly: false,
+      addingId: null, currentPage: 1, lastPage: 1, totalProducts: 0,
     }
   },
   computed: {
     visiblePages() {
-      const p = []
-      const start = Math.max(1, this.currentPage - 2)
-      const end = Math.min(this.lastPage, start + 4)
-      for (let i = start; i <= end; i++) p.push(i)
+      const c = this.currentPage, l = this.lastPage
+      if (l <= 7) return Array.from({ length: l }, (_, i) => i + 1)
+      const p = [1]; if (c > 3) p.push('...')
+      const s = Math.max(2, c - 1), e = Math.min(l - 1, c + 1)
+      for (let i = s; i <= e; i++) p.push(i)
+      if (c < l - 2) p.push('...'); if (l > 1) p.push(l)
       return p
     },
   },
@@ -174,9 +172,7 @@ export default {
     selectedCategory() { this.currentPage = 1; this.fetchProducts() },
     inStockOnly() { this.currentPage = 1; this.fetchProducts() },
   },
-  async mounted() {
-    await Promise.all([this.fetchProducts(), this.fetchCategories()])
-  },
+  async mounted() { await Promise.all([this.fetchProducts(), this.fetchCategories()]) },
   methods: {
     async fetchProducts() {
       this.loading = true
@@ -190,45 +186,13 @@ export default {
         this.currentPage = data.meta?.current_page || 1
         this.lastPage = data.meta?.last_page || 1
         this.totalProducts = data.meta?.total || 0
-      } catch {
-        this.products = []
-      } finally {
-        this.loading = false
-      }
+      } catch { this.products = [] }
+      finally { this.loading = false }
     },
-    changePage(page) {
-      if (page < 1 || page > this.lastPage) return
-      this.currentPage = page
-      this.fetchProducts()
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    },
-    async fetchCategories() {
-      try {
-        const data = await get('/api/categories')
-        this.categories = data.data || []
-      } catch {
-        this.categories = []
-      }
-    },
-    async addToCart(product) {
-      if (this.addingId) return
-      this.addingId = product.id
-      try {
-        await post('/api/cart', { product_id: product.id, quantity: 1 })
-        this.$refs.successModal.show('"' + product.name + '" has been added to your cart.')
-      } catch (err) {
-        this.$refs.toastRef?.show({ type: 'error', title: 'Error', message: err.data?.message || 'Failed to add to cart.' })
-      } finally {
-        this.addingId = null
-      }
-    },
-    resetFilters() {
-      this.searchQuery = ''
-      this.selectedCategory = null
-      this.inStockOnly = false
-      this.currentPage = 1
-      this.fetchProducts()
-    },
+    changePage(p) { if (p < 1 || p > this.lastPage) return; this.currentPage = p; this.fetchProducts(); window.scrollTo({ top: 0, behavior: 'smooth' }) },
+    async fetchCategories() { try { const d = await get('/api/categories'); this.categories = d.data || [] } catch { this.categories = [] } },
+    async addToCart(product) { if (this.addingId) return; this.addingId = product.id; try { await post('/api/cart', { product_id: product.id, quantity: 1 }); this.$refs.successModal.show('"' + product.name + '" added.') } catch (e) { this.$refs.toastRef?.show({ type: 'error', title: 'Error', message: e.data?.message || 'Failed.' }) } finally { this.addingId = null } },
+    resetFilters() { this.searchQuery = ''; this.selectedCategory = null; this.inStockOnly = false; this.currentPage = 1; this.fetchProducts() },
   },
 }
 </script>

@@ -1,9 +1,10 @@
 <template>
   <div>
-    <section class="bg-gradient-to-r from-pink-500 to-rose-500 text-white py-12 px-4">
-      <div class="max-w-7xl mx-auto animate-fade-in-down">
-        <h1 class="text-4xl font-bold mb-2">My Wishlist</h1>
-        <p class="text-lg text-pink-100">Products you love, saved for later</p>
+    <section class="relative text-white py-24 px-4" style="background-image: url('https://hips.hearstapps.com/hmg-prod/images/tech-gifts-6939ea8891e6c.jpg?crop=0.8930232558139535xw:1xh;center,top&resize=1200:*'); background-size: cover; background-position: center;">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+      <div class="max-w-7xl mx-auto animate-fade-in-down relative text-center">
+        <h1 class="text-5xl font-extrabold mb-3 drop-shadow-lg">My Wishlist</h1>
+        <p class="text-xl text-white/80 font-light max-w-xl mx-auto">Products you love, saved for later</p>
       </div>
     </section>
 
@@ -68,7 +69,7 @@
               <div class="flex justify-between items-center">
                 <span class="text-xl font-bold text-blue-500">${{ Number(item.product.price).toFixed(2) }}</span>
                 <button @click="addToCart(item.product)" :disabled="item.product.stock === 0 || addingId === item.product.id"
-                  class="bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 active:scale-95 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1">
+                  class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 active:scale-95 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5">
                   <i v-if="addingId === item.product.id" class="fas fa-spinner fa-spin"></i>
                   <i v-else class="fas fa-cart-plus"></i>
                   {{ addingId === item.product.id ? 'Adding...' : 'Cart' }}
