@@ -124,16 +124,14 @@ export default {
   },
   computed: {
     pageNumbers() {
-      const c = this.pagination.current_page
-      const l = this.pagination.last_page
-      if (l <= 7) return Array.from({ length: l }, (_, i) => i + 1)
-      const pages = [1]
-      if (c > 3) pages.push('...')
-      const start = Math.max(2, c - 1)
-      const end = Math.min(l - 1, c + 1)
+      const c = this.pagination.current_page, l = this.pagination.last_page
+      if (l <= 3) return Array.from({ length: l }, (_, i) => i + 1)
+      const start = Math.max(1, c - 1)
+      const end = Math.min(l, c + 1)
+      const pages = []
+      if (start > 1) pages.push('...')
       for (let i = start; i <= end; i++) pages.push(i)
-      if (c < l - 2) pages.push('...')
-      if (l > 1) pages.push(l)
+      if (end < l) pages.push('...')
       return pages
     },
   },

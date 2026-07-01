@@ -81,37 +81,28 @@ const handleRegister = async () => {
       email: form.value.email,
       password: form.value.password,
       password_confirmation: form.value.password_confirmation,
-    }).catch(() => ({}))
+    })
 
-    if (response.ok && data.success) {
-      localStorage.setItem('token', data.token)
-      localStorage.setItem(
-        'user',
-        JSON.stringify({
-          id: data.user?.id,
-          name: data.user?.name,
-          email: data.user?.email,
-          role: data.role,
-        }),
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('user', JSON.stringify({
+      id: data.user?.id,
+      name: data.user?.name,
+      email: data.user?.email,
+      role: data.role,
+    }))
+
+    message.value = 'Account created! Redirecting...'
+    message_type.value = 'success'
+
+    setTimeout(() => { router.push('/home') }, 900)
+  } catch (err) {
+    var errData = err.data || {}
+    if (errData.errors) {
+      errors.value = Object.fromEntries(
+        Object.entries(errData.errors).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])
       )
-
-      message.value = 'Account created! Redirecting...'
-      message_type.value = 'success'
-
-      setTimeout(() => {
-        router.push('/home')
-      }, 900)
-    } else {
-      if (data.errors) {
-        errors.value = Object.fromEntries(
-          Object.entries(data.errors).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v]),
-        )
-      }
-      message.value = data.message || 'Registration failed. Please try again.'
-      message_type.value = 'error'
     }
-  } catch (error) {
-    message.value = 'Error: ' + error.message
+    message.value = errData.message || 'Registration failed. Please try again.'
     message_type.value = 'error'
   } finally {
     loading.value = false

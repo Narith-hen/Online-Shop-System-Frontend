@@ -270,7 +270,7 @@ function initSocket() {
         type: data.type, link: data.link, created_at: data.created_at, read: false,
       })
       unreadCount.value++
-      if (data.type === 'new_product' && toastRef.value) toastRef.value.show(data)
+      if (toastRef.value) toastRef.value.show(data)
     }
   })
   socketOn('cart-update', () => { if (isCustomer.value) fetchCartCount() })

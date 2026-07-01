@@ -77,13 +77,15 @@
 
       <div v-if="pagination.last_page > 1" class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 mt-8 border-t border-gray-100">
         <p class="text-sm text-gray-500">Page {{ pagination.current_page }} of {{ pagination.last_page }} ({{ pagination.total }} orders)</p>
-        <div class="flex items-center gap-2">
-          <button @click="goToPage(pagination.current_page - 1)" :disabled="pagination.current_page <= 1" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-chevron-left mr-1"></i> Previous</button>
-          <template v-for="page in pageNumbers" :key="page">
-            <span v-if="page === '...'" class="px-2 text-gray-400">...</span>
-            <button v-else @click="goToPage(page)" class="w-10 h-10 rounded-lg text-sm font-semibold transition" :class="page === pagination.current_page ? 'bg-gray-900 text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-100'">{{ page }}</button>
+        <div class="flex items-center gap-1.5">
+          <button @click="goToPage(pagination.current_page - 1)" :disabled="pagination.current_page <= 1" class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-medium transition disabled:opacity-30 disabled:cursor-not-allowed border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900"><i class="fas fa-chevron-left text-xs"></i></button>
+          <template v-for="(page, idx) in pageNumbers" :key="'p' + idx">
+            <span v-if="page === '...'" class="px-1 text-gray-400 text-sm select-none">...</span>
+            <button v-else @click="goToPage(page)"
+              class="w-10 h-10 rounded-xl text-sm font-semibold transition-all duration-150 flex items-center justify-center"
+              :class="page === pagination.current_page ? 'bg-gray-900 text-white shadow-md shadow-gray-900/20 scale-105' : 'border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900 hover:border-gray-400'">{{ page }}</button>
           </template>
-          <button @click="goToPage(pagination.current_page + 1)" :disabled="pagination.current_page >= pagination.last_page" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed">Next <i class="fas fa-chevron-right ml-1"></i></button>
+          <button @click="goToPage(pagination.current_page + 1)" :disabled="pagination.current_page >= pagination.last_page" class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-medium transition disabled:opacity-30 disabled:cursor-not-allowed border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900"><i class="fas fa-chevron-right text-xs"></i></button>
         </div>
       </div>
     </div>
@@ -210,12 +212,14 @@ export default {
     },
     pageNumbers() {
       const c = this.pagination.current_page, l = this.pagination.last_page
-      if (l <= 7) return Array.from({ length: l }, (_, i) => i + 1)
-      const p = [1]; if (c > 3) p.push('...')
-      const s = Math.max(2, c - 1), e = Math.min(l - 1, c + 1)
-      for (let i = s; i <= e; i++) p.push(i)
-      if (c < l - 2) p.push('...'); if (l > 1) p.push(l)
-      return p
+      if (l <= 3) return Array.from({ length: l }, (_, i) => i + 1)
+      const start = Math.max(1, c - 1)
+      const end = Math.min(l, c + 1)
+      const pages = []
+      if (start > 1) pages.push('...')
+      for (let i = start; i <= end; i++) pages.push(i)
+      if (end < l) pages.push('...')
+      return pages
     },
   },
   async mounted() { await this.fetchOrders() },
