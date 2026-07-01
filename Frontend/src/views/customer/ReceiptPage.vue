@@ -56,7 +56,7 @@
             <p class="text-sm text-gray-600" v-if="order.shipping_phone">Phone: {{ order.shipping_phone }}</p>
           </div>
           <p class="text-sm text-gray-600 mt-1" v-if="order.payment_method">
-            Payment: <span class="font-semibold">ABA KHQR</span>
+            Payment: <span class="font-semibold capitalize">{{ order.payment_method }}</span>
             <span class="inline-block ml-1 text-xs font-semibold px-2 py-0.5 rounded" :class="paymentStatusClass(order.payment_status)">
               {{ capitalize(order.payment_status || 'unpaid') }}
             </span>

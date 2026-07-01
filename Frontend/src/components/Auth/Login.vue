@@ -9,6 +9,7 @@ const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const message = ref('')
+const messageType = ref('error') // 'error' | 'success'
 const showPassword = ref(false)
 const socialLoading = ref(null)
 
@@ -40,6 +41,7 @@ const handleLogin = async () => {
 
   loading.value = true
   message.value = ''
+  messageType.value = 'error'
 
   try {
     const data = await post('/api/login', {
@@ -73,6 +75,7 @@ const handleLogin = async () => {
       password.value = ''
       showPassword.value = false
       message.value = 'Login successful!'
+      messageType.value = 'success'
 
       setTimeout(() => {
         message.value = ''
@@ -128,7 +131,7 @@ const togglePasswordVisibility = () => {
           v-if="message"
           :class="[
             'p-4 rounded-lg text-center text-sm font-medium',
-            message.includes('')
+            messageType === 'success'
               ? 'bg-green-100 text-green-700 border border-green-300'
               : 'bg-red-100 text-red-700 border border-red-300',
           ]"

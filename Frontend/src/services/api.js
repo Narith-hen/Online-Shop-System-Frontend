@@ -7,16 +7,17 @@ function authHeaders() {
 
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`
+  const isFormData = options.body instanceof FormData
   const config = {
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...authHeaders(),
       ...options.headers,
     },
     ...options,
   }
-  if (config.body && typeof config.body === 'object' && !(config.body instanceof FormData)) {
+  if (config.body && typeof config.body === 'object' && !isFormData) {
     config.body = JSON.stringify(config.body)
   }
   const res = await fetch(url, config)

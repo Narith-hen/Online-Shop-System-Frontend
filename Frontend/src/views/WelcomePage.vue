@@ -49,13 +49,13 @@
           </div>
           <div class="text-center">
             <div class="text-4xl mb-3"><i class="fas fa-users text-blue-500"></i></div>
-            <h3 class="font-bold text-lg mb-1">50K+ Happy Customers</h3>
+            <h3 class="font-bold text-lg mb-1">{{ stats.customers }} Happy Customers</h3>
             <p class="text-gray-600">Trusted Worldwide</p>
           </div>
           <div class="text-center">
             <div class="text-4xl mb-3"><i class="fas fa-star text-yellow-400"></i></div>
-            <h3 class="font-bold text-lg mb-1">4.9/5 Rating</h3>
-            <p class="text-gray-600">Based on 10K+ Reviews</p>
+            <h3 class="font-bold text-lg mb-1">{{ stats.rating }} Rating</h3>
+            <p class="text-gray-600">Based on {{ stats.reviewsCount }} Reviews</p>
           </div>
         </div>
       </div>
@@ -150,40 +150,54 @@
     <!-- Featured Products Showcase -->
     <section class="max-w-7xl mx-auto px-4 py-16">
       <h2 class="text-4xl font-bold text-center mb-12">Best Sellers</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div v-if="loadingProducts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div v-for="i in 4" :key="i" class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+          <div class="skeleton skeleton-image h-48 !rounded-none"></div>
+          <div class="p-4 space-y-3">
+            <div class="skeleton skeleton-text-sm"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text-lg w-24"></div>
+          </div>
+        </div>
+      </div>
+      <div v-else-if="featuredProducts.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div
-          v-for="product in 4"
-          :key="product"
+          v-for="product in featuredProducts"
+          :key="product.id"
           class="product-card"
         >
           <div class="relative">
-            <img
-              src="https://via.placeholder.com/300x200?text=Product"
-              alt="Product"
-              class="product-img w-full h-48 object-cover"
-            />
-            <div class="absolute top-3 right-3 bg-red-500 text-white px-3 py-0.5 rounded-full text-xs font-bold">
-              -30%
-            </div>
+            <router-link :to="`/products/${product.id}`">
+              <img
+                :src="product.image_url || 'https://placehold.co/300x200/e2e8f0/64748b?text=No+Image'"
+                :alt="product.name"
+                class="product-img w-full h-48 object-cover"
+              />
+            </router-link>
           </div>
           <div class="p-4">
             <div class="flex items-center gap-1 mb-2">
-              <span v-for="s in 5" :key="s" class="text-yellow-400 text-xs"><i class="fas fa-star"></i></span>
-              <span class="text-gray-400 text-xs ml-1">(256)</span>
+              <template v-if="product.reviews_count">
+                <span v-for="s in 5" :key="s" class="text-xs" :class="s <= starFill(product.reviews_avg_rating) ? 'text-yellow-400' : 'text-gray-200'"><i class="fas fa-star"></i></span>
+                <span class="text-gray-400 text-xs ml-1">({{ product.reviews_count }})</span>
+              </template>
+              <span v-else class="text-gray-400 text-xs">No reviews yet</span>
             </div>
-            <h3 class="font-bold text-lg mb-1">Premium Product</h3>
-            <p class="text-gray-500 text-sm mb-3">High quality with amazing features</p>
+            <router-link :to="`/products/${product.id}`" class="font-bold text-lg mb-1 block hover:text-blue-500 transition line-clamp-1">{{ product.name }}</router-link>
+            <p v-if="product.category" class="text-gray-500 text-sm mb-3">{{ product.category.name }}</p>
             <div class="flex justify-between items-center">
-              <div>
-                <span class="text-2xl font-bold text-blue-500">$49.99</span>
-                <span class="text-sm text-gray-400 line-through ml-2">$69.99</span>
-              </div>
-              <button class="bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 transition text-sm font-medium">
-                Add
+              <span class="text-2xl font-bold text-blue-500">${{ Number(product.price).toFixed(2) }}</span>
+              <button @click="addToCart(product)" :disabled="product.stock === 0 || addingId === product.id"
+                class="bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                <i v-if="addingId === product.id" class="fas fa-spinner fa-spin"></i>
+                <span v-else>Add</span>
               </button>
             </div>
           </div>
         </div>
+      </div>
+      <div v-else class="text-center py-12 text-gray-400">
+        <p>No products available yet.</p>
       </div>
       <div class="text-center mt-12">
         <router-link
@@ -346,9 +360,53 @@
 
 <script>
 import Navbar from '@/components/Navbar.vue'
+import { get, post } from '@/services/api'
+import { starFill } from '@/utils/rating'
 
 export default {
   name: 'WelcomePage',
   components: { Navbar },
+  data() {
+    return {
+      stats: { customers: '—', rating: '—', reviewsCount: 0 },
+      featuredProducts: [],
+      loadingProducts: false,
+      addingId: null,
+    }
+  },
+  async mounted() {
+    await Promise.all([this.fetchStats(), this.fetchFeaturedProducts()])
+  },
+  methods: {
+    starFill,
+    async fetchStats() {
+      try {
+        const s = await get('/api/stats')
+        this.stats = {
+          customers: s.customers ?? 0,
+          rating: s.reviews_count > 0 ? s.rating + '/5' : 'New',
+          reviewsCount: s.reviews_count ?? 0,
+        }
+      } catch { /* keep placeholders */ }
+    },
+    async fetchFeaturedProducts() {
+      this.loadingProducts = true
+      try {
+        const data = await get('/api/products', { per_page: 4 })
+        this.featuredProducts = data.data || []
+      } catch { this.featuredProducts = [] }
+      finally { this.loadingProducts = false }
+    },
+    async addToCart(product) {
+      if (this.addingId) return
+      if (!localStorage.getItem('token')) { this.$router.push('/login'); return }
+      this.addingId = product.id
+      try {
+        await post('/api/cart', { product_id: product.id, quantity: 1 })
+        this.$router.push('/cart')
+      } catch { /* ignore */ }
+      finally { this.addingId = null }
+    },
+  },
 }
 </script>

@@ -9,7 +9,7 @@
         </router-link>
 
         <!-- Desktop Nav -->
-        <div v-if="isLoggedIn && isCustomer" class="hidden md:flex items-center gap-1">
+        <div v-if="isLoggedIn && isCustomer" class="hidden lg:flex items-center gap-1">
           <router-link to="/home" class="nav-link">Home</router-link>
           <router-link to="/products" class="nav-link">Products</router-link>
           <router-link to="/categories" class="nav-link">Categories</router-link>
@@ -18,7 +18,7 @@
           <router-link to="/about" class="nav-link">About</router-link>
           <router-link to="/contact" class="nav-link">Contact</router-link>
         </div>
-        <div v-else-if="!isLoggedIn" class="hidden md:flex items-center gap-1">
+        <div v-else-if="!isLoggedIn" class="hidden lg:flex items-center gap-1">
           <a href="#features" class="nav-link">Features</a>
           <a href="#testimonials" class="nav-link">Testimonials</a>
           <a href="#pricing" class="nav-link">Pricing</a>
@@ -126,7 +126,7 @@
 
           <!-- Mobile hamburger -->
           <button @click="mobileOpen = !mobileOpen"
-            class="md:hidden w-10 h-10 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition"
+            class="lg:hidden w-10 h-10 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition"
             aria-label="Menu">
             <i :class="mobileOpen ? 'fas fa-xmark' : 'fas fa-bars'" class="text-lg"></i>
           </button>
@@ -134,11 +134,14 @@
       </div>
     </div>
 
-    <!-- Mobile drawer overlay -->
-    <div v-if="mobileOpen" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[55] md:hidden" @click="mobileOpen = false"></div>
+  </nav>
 
-    <!-- Mobile drawer -->
-    <div v-if="mobileOpen" class="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-[60] md:hidden flex flex-col">
+  <!-- Mobile drawer overlay + panel: teleported to <body> so `position: fixed`
+       resolves against the viewport, not <nav>'s backdrop-blur containing block -->
+  <Teleport to="body">
+    <div v-if="mobileOpen" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[55] lg:hidden" @click="mobileOpen = false"></div>
+
+    <div v-if="mobileOpen" class="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-[60] lg:hidden flex flex-col">
       <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
           <div class="flex items-center gap-2.5">
             <img src="/images/logo.png" alt="Online Shop" class="h-8 w-auto" />
@@ -217,13 +220,14 @@
           </div>
         </template>
     </div>
-  </nav>
+  </Teleport>
   <Toast ref="toastRef" />
 </template>
 
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import Toast from '@/components/Toast.vue'
 import { useAuth } from '@/stores/auth'
 import { useSocket } from '@/composables/useSocket'
@@ -231,7 +235,9 @@ import { get, post } from '@/services/api'
 
 const router = useRouter()
 const route = useRoute()
-const { isLoggedIn, isCustomer, userName, userEmail, userInitial, clearAuth, refresh } = useAuth()
+const auth = useAuth()
+const { isLoggedIn, isCustomer, userName, userEmail, userInitial } = storeToRefs(auth)
+const { clearAuth, refresh } = auth
 const { connect: connectSocket, disconnect: disconnectSocket, on: socketOn, off: socketOff } = useSocket()
 
 const cartCount = ref(0)

@@ -426,9 +426,6 @@ export default {
         this.showReceipt = false
         this.orderPlaced = true; this.placedOrderId = data.order?.id || ''; this.placedTotal = Number(data.order?.total || 0).toFixed(2)
         this.items = []; this.cartCount = 0; this.subtotal = 0; this.stepIndex = 3
-        this.$refs.successModal.show('Order #' + this.placedOrderId + ' has been placed successfully! Total: $' + this.placedTotal).then(function() {
-          this.$router.push('/orders')
-        }.bind(this))
       } catch (err) { this.checkoutError = err.data?.message || 'Failed to place order.'; this.showReceipt = false }
       finally { this.placing = false }
     },

@@ -36,28 +36,28 @@
                   <div class="w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-3">
                     <i class="fas fa-users text-blue-500 text-xl"></i>
                   </div>
-                  <p class="text-3xl font-bold text-gray-900">10K+</p>
+                  <p class="text-3xl font-bold text-gray-900">{{ stats.customers }}</p>
                   <p class="text-sm text-gray-500">Happy Customers</p>
                 </div>
                 <div class="bg-white rounded-xl p-6 shadow-sm text-center">
                   <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <i class="fas fa-box text-purple-600 text-xl"></i>
                   </div>
-                  <p class="text-3xl font-bold text-gray-900">5K+</p>
+                  <p class="text-3xl font-bold text-gray-900">{{ stats.products }}</p>
                   <p class="text-sm text-gray-500">Products</p>
                 </div>
                 <div class="bg-white rounded-xl p-6 shadow-sm text-center">
                   <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <i class="fas fa-truck text-emerald-600 text-xl"></i>
                   </div>
-                  <p class="text-3xl font-bold text-gray-900">50K+</p>
+                  <p class="text-3xl font-bold text-gray-900">{{ stats.ordersDelivered }}</p>
                   <p class="text-sm text-gray-500">Orders Delivered</p>
                 </div>
                 <div class="bg-white rounded-xl p-6 shadow-sm text-center">
                   <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <i class="fas fa-star text-amber-600 text-xl"></i>
                   </div>
-                  <p class="text-3xl font-bold text-gray-900">4.8</p>
+                  <p class="text-3xl font-bold text-gray-900">{{ stats.rating }}</p>
                   <p class="text-sm text-gray-500">Avg. Rating</p>
                 </div>
               </div>
@@ -162,11 +162,13 @@
 <script>
 import narithImg from '@/assets/images/NarithHen.png'
 import sothinImg from '@/assets/images/SothinKe.jpg'
+import { get } from '@/services/api'
 
 export default {
   name: 'AboutPage',
   data() {
     return {
+      stats: { products: '—', customers: '—', ordersDelivered: '—', rating: '—' },
       benefits: [
         { icon: 'fas fa-cubes text-blue-500', bg: 'bg-blue-200', title: 'Wide Selection', desc: 'Browse thousands of products across multiple categories curated just for you.' },
         { icon: 'fas fa-tags text-emerald-600', bg: 'bg-emerald-100', title: 'Competitive Prices', desc: 'Get the best deals with regular discounts and exclusive offers on your favorite items.' },
@@ -181,6 +183,17 @@ export default {
         { name: 'ReakSmey San', role: 'Tech Director', bio: 'Drives innovation and platform development with a passion for great user experiences.', image: 'https://media.licdn.com/dms/image/v2/D5603AQFRUl8al8Mj_Q/profile-displayphoto-crop_800_800/B56Z5CxkdLGkAI-/0/1779236752915?e=1784160000&v=beta&t=OKQTlZblnepM2udvmR6KR-nTVumLb1j5MHwXY9yZSHM' },
       ],
     }
+  },
+  async mounted() {
+    try {
+      const s = await get('/api/stats')
+      this.stats = {
+        products: s.products ?? 0,
+        customers: s.customers ?? 0,
+        ordersDelivered: s.orders_delivered ?? 0,
+        rating: s.reviews_count > 0 ? s.rating : 'New',
+      }
+    } catch { /* keep placeholders */ }
   },
 }
 </script>

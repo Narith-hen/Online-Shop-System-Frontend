@@ -35,7 +35,7 @@
             :style="{ animationDelay: `${index * 60}ms` }"
           >
             <router-link :to="`/products/${product.id}`">
-              <img :src="product.image_url || 'https://via.placeholder.com/300x200'" :alt="product.name" class="w-full h-48 object-cover" />
+              <img :src="product.image_url || 'https://placehold.co/300x200/e2e8f0/64748b?text=No+Image'" :alt="product.name" class="w-full h-48 object-cover" />
             </router-link>
             <div class="p-4">
               <router-link :to="`/products/${product.id}`" class="font-bold text-lg mb-2 block hover:text-blue-500">
@@ -44,7 +44,11 @@
               <p class="text-gray-600 text-sm mb-4">{{ product.description || 'No description available.' }}</p>
               <div class="flex justify-between items-center">
                 <span class="text-2xl font-bold text-blue-500">${{ product.price?.toFixed(2) }}</span>
-                <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Add</button>
+                <button @click="addToCart(product)" :disabled="product.stock === 0 || addingId === product.id"
+                  class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                  <i v-if="addingId === product.id" class="fas fa-spinner fa-spin"></i>
+                  <span v-else>Add</span>
+                </button>
               </div>
             </div>
           </div>
@@ -99,12 +103,17 @@
         </div>
       </div>
     </template>
+    <Toast ref="toastRef" />
   </div>
 </template>
 
 <script>
+import Toast from '@/components/Toast.vue'
+import { post } from '@/services/api'
+
 export default {
   name: 'CategoryPage',
+  components: { Toast },
   data() {
     return {
       categories: [],
@@ -114,6 +123,7 @@ export default {
       productsLoading: false,
       productCurrentPage: 1,
       productLastPage: 1,
+      addingId: null,
     }
   },
   async mounted() {
@@ -180,6 +190,18 @@ export default {
       if (page < 1 || page > this.productLastPage) return
       this.productCurrentPage = page
       this.loadCategoryDetail(this.selectedCategory.id, page)
+    },
+    async addToCart(product) {
+      if (this.addingId) return
+      this.addingId = product.id
+      try {
+        await post('/api/cart', { product_id: product.id, quantity: 1 })
+        this.$refs.toastRef?.show({ type: 'success', title: 'Added to Cart', message: '"' + product.name + '" has been added to your cart.' })
+      } catch (err) {
+        this.$refs.toastRef?.show({ type: 'error', title: 'Error', message: err.data?.message || 'Failed to add to cart.' })
+      } finally {
+        this.addingId = null
+      }
     },
   },
 }

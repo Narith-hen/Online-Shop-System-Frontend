@@ -56,8 +56,14 @@
           <p v-if="product.category" class="text-sm text-blue-500 font-medium mb-2">{{ product.category.name }}</p>
           <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-3">{{ product.name }}</h1>
 
-          <div class="flex items-center gap-0.5 mb-4">
-            <span v-for="s in 5" :key="s" class="text-sm text-yellow-400"><i class="fas fa-star"></i></span>
+          <div class="flex items-center gap-1.5 mb-4">
+            <template v-if="product.reviews_count">
+              <div class="flex items-center gap-0.5">
+                <span v-for="s in 5" :key="s" class="text-sm" :class="s <= starFill(product.reviews_avg_rating) ? 'text-yellow-400' : 'text-gray-200'"><i class="fas fa-star"></i></span>
+              </div>
+              <span class="text-sm text-gray-500">{{ product.reviews_avg_rating }} ({{ product.reviews_count }} review{{ product.reviews_count === 1 ? '' : 's' }})</span>
+            </template>
+            <span v-else class="text-sm text-gray-400">No reviews yet</span>
           </div>
 
           <hr class="border-gray-200 mb-4" />
@@ -119,6 +125,7 @@
 <script>
 import Toast from '@/components/Toast.vue'
 import { get, post } from '@/services/api'
+import { starFill } from '@/utils/rating'
 
 export default {
   name: 'ProductDetail',
@@ -131,7 +138,23 @@ export default {
   },
   async mounted() { await this.fetchProduct() },
   methods: {
-    async fetchProduct() { this.loading = true; try { const d = await get(`/api/products/${this.$route.params.id}`); this.product = d.data || null } catch { this.product = null } finally { this.loading = false } },
+    starFill,
+    async fetchProduct() {
+      this.loading = true
+      try {
+        const d = await get(`/api/products/${this.$route.params.id}`)
+        this.product = d.data || null
+        if (this.product) await this.checkWishlist()
+      } catch { this.product = null }
+      finally { this.loading = false }
+    },
+    async checkWishlist() {
+      try {
+        const w = await get('/api/wishlist')
+        const items = w.items || []
+        this.inWishlist = items.some(i => i.product_id === this.product.id || i.product?.id === this.product.id)
+      } catch { this.inWishlist = false }
+    },
     incrementQty() { if (this.quantity < this.product.stock) this.quantity++ },
     decrementQty() { if (this.quantity > 1) this.quantity-- },
     async addToCart() { if (this.addingToCart || this.product.stock === 0) return; this.addingToCart = true; try { await post('/api/cart', { product_id: this.product.id, quantity: this.quantity }); this.$refs.toastRef?.show({ type: 'success', title: 'Added to Cart', message: '"' + this.product.name + '" has been added to your cart.' }) } catch (e) { this.$refs.toastRef?.show({ type: 'error', title: 'Error', message: e.data?.message || 'Failed.' }) } finally { this.addingToCart = false } },

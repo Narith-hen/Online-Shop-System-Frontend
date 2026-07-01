@@ -97,7 +97,11 @@
                   {{ product.name }}
                 </router-link>
                 <div class="flex items-center gap-1 mb-2">
-                  <span v-for="s in 5" :key="s" class="text-[10px]" :class="s <= 4 ? 'text-yellow-400' : 'text-gray-200'"><i class="fas fa-star"></i></span>
+                  <template v-if="product.reviews_count">
+                    <span v-for="s in 5" :key="s" class="text-[10px]" :class="s <= starFill(product.reviews_avg_rating) ? 'text-yellow-400' : 'text-gray-200'"><i class="fas fa-star"></i></span>
+                    <span class="text-[10px] text-gray-400 ml-1">({{ product.reviews_count }})</span>
+                  </template>
+                  <span v-else class="text-[10px] text-gray-400">No reviews yet</span>
                 </div>
                 <div v-if="product.stock <= 3 && product.stock > 0" class="text-[10px] text-amber-600 font-medium mb-2">Only {{ product.stock }} left</div>
                 <div v-if="product.stock === 0" class="text-[10px] text-red-600 font-medium mb-2">Out of stock</div>
@@ -145,6 +149,7 @@
 import SuccessModal from '@/components/SuccessModal.vue'
 import Toast from '@/components/Toast.vue'
 import { get, post } from '@/services/api'
+import { starFill } from '@/utils/rating'
 
 export default {
   name: 'CustomerProducts',
@@ -176,6 +181,7 @@ export default {
   },
   async mounted() { await Promise.all([this.fetchProducts(), this.fetchCategories()]) },
   methods: {
+    starFill,
     async fetchProducts() {
       this.loading = true
       try {

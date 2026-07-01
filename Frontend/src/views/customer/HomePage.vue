@@ -64,8 +64,8 @@
                 <i class="fas fa-star"></i>
               </span>
               <div>
-                <p class="text-sm font-bold text-gray-900">4.9 Rating</p>
-                <p class="text-xs text-gray-500">From 10k+ reviews</p>
+                <p class="text-sm font-bold text-gray-900">{{ stats.rating || '—' }} Rating</p>
+                <p class="text-xs text-gray-500">From {{ stats.reviewsCount }} reviews</p>
               </div>
             </div>
           </div>
@@ -174,8 +174,11 @@
               {{ product.name }}
             </router-link>
             <div class="flex items-center gap-1 mt-2">
-              <span v-for="s in 5" :key="s" class="text-[10px]" :class="s <= 4 ? 'text-yellow-400' : 'text-gray-200'"><i class="fas fa-star"></i></span>
-              <span class="text-[10px] text-gray-400 ml-1">({{ product.reviews_count || Math.floor(Math.random() * 80) + 5 }})</span>
+              <template v-if="product.reviews_count">
+                <span v-for="s in 5" :key="s" class="text-[10px]" :class="s <= starFill(product.reviews_avg_rating) ? 'text-yellow-400' : 'text-gray-200'"><i class="fas fa-star"></i></span>
+                <span class="text-[10px] text-gray-400 ml-1">({{ product.reviews_count }})</span>
+              </template>
+              <span v-else class="text-[10px] text-gray-400">No reviews yet</span>
             </div>
             <div class="flex justify-between items-center mt-3">
               <span class="text-lg font-bold text-blue-500">${{ Number(product.price).toFixed(2) }}</span>
@@ -249,6 +252,7 @@
 import SuccessModal from '@/components/SuccessModal.vue'
 import Toast from '@/components/Toast.vue'
 import { get, post } from '@/services/api'
+import { starFill } from '@/utils/rating'
 
 export default {
   components: { SuccessModal, Toast },
@@ -260,7 +264,7 @@ export default {
       categories: [],
       categoriesLoading: false,
       addingId: null,
-      stats: { products: '10k+', customers: '5k+', rating: '4.9\u2605' },
+      stats: { products: '\u2014', customers: '\u2014', rating: '\u2014', reviewsCount: 0 },
       features: [
         { icon: 'fas fa-truck text-emerald-600', bg: 'bg-emerald-100', title: 'Free Shipping', desc: 'Free shipping on all orders over $50. Fast and reliable delivery to your doorstep.' },
         { icon: 'fas fa-shield-halved text-blue-600', bg: 'bg-blue-100', title: 'Secure Payment', desc: '100% safe and encrypted transactions. Your payment information is always protected.' },
@@ -277,9 +281,21 @@ export default {
     }
   },
   async mounted() {
-    await Promise.all([this.fetchFeaturedProducts(), this.fetchCategories()])
+    await Promise.all([this.fetchFeaturedProducts(), this.fetchCategories(), this.fetchStats()])
   },
   methods: {
+    starFill,
+    async fetchStats() {
+      try {
+        const s = await get('/api/stats')
+        this.stats = {
+          products: s.products ?? 0,
+          customers: s.customers ?? 0,
+          rating: s.reviews_count > 0 ? s.rating + '★' : 'New',
+          reviewsCount: s.reviews_count ?? 0,
+        }
+      } catch { /* keep placeholders */ }
+    },
     async fetchFeaturedProducts() {
       this.loadingProducts = true
       try {
